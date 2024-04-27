@@ -4,6 +4,8 @@ import os from "os"
 import http from "isomorphic-git/http/node/index.js"
 import { DegitOptions } from "../../types/packages"
 
+_git.plugins.set('home', home());
+
 let gitClone = async (
   repo: string,
   dir: string,
