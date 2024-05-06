@@ -1,5 +1,6 @@
 import path from "path"
 import os from "os"
+import { pathToFileURL } from 'url'
 
 process.env.KIT =
   process.env.KIT || path.resolve(os.homedir(), ".kit")
@@ -7,8 +8,8 @@ process.env.KIT =
 process.env.KNODE =
   process.env.KNODE || path.resolve(os.homedir(), ".knode")
 
-let importKit = async (...parts) =>
-  await import(path.resolve(process.env.KIT, ...parts))
+const resolveImportable = (...parts) => pathToFileURL(path.resolve(...parts)).toString()
+let importKit = async (...parts) => await import(resolveImportable(process.env.KIT, ...parts))
 
 await importKit("api/global.js")
 await importKit("api/kit.js")
@@ -34,11 +35,11 @@ process.env.KENV = kenvTestPath
 /** @type {import("../src/core/utils.js")} */
 let { KIT_APP, KIT_APP_PROMPT, KIT_FIRST_PATH } =
   await import(
-    path.resolve(`${process.env.KIT}`, "core", "utils.js")
+    resolveImportable(`${process.env.KIT}`, "core", "utils.js")
   )
 /** @type {import("../src/core/enum.js")} */
 let { Channel } = await import(
-  path.resolve(`${process.env.KIT}`, "core", "enum.js")
+  resolveImportable(`${process.env.KIT}`, "core", "enum.js")
 )
 
 process.env.PATH = KIT_FIRST_PATH
