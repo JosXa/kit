@@ -1,4 +1,4 @@
 //Description: Script Kit CLI
-await edit(kitPath("logs/kit.log"), kitPath())
+await edit(kitPath('logs/kit.log'), kitPath())
 
-export {}
+export type {}

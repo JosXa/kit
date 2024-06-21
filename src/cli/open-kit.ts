@@ -1,3 +1,3 @@
 await edit(kitPath())
 
-export {}
+export type {}

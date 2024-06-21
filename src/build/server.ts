@@ -1,6 +1,6 @@
-import express from "express"
-import bodyParser from "body-parser"
-import { JSXLoad } from "./loader.js" // Assuming loader.js exports JSXLoad
+import bodyParser from 'body-parser'
+import express from 'express'
+import { JSXLoad } from './loader.js' // Assuming loader.js exports JSXLoad
 
 const app = express()
 const port = 3000
@@ -9,23 +9,21 @@ const port = 3000
 app.use(bodyParser.json())
 
 // POST endpoint to handle the module loading
-app.get("/import", async (req, res) => {
+app.get('/import', async (req, res) => {
   const { path } = req.query
 
   if (!path) {
-    return res.status(400).send("URL is required")
+    return res.status(400).send('URL is required')
   }
 
   try {
     const transform = await JSXLoad(path)
     res.json(transform)
   } catch (error) {
-    res.status(500).send("Error processing the request")
+    res.status(500).send('Error processing the request')
   }
 })
 
 app.listen(port, () => {
-  console.log(
-    `Server listening at http://localhost:${port}`
-  )
+  console.log(`Server listening at http://localhost:${port}`)
 })

@@ -1,19 +1,19 @@
-import ava from "ava"
-import "../../test-sdk/config.js"
+import ava from 'ava'
+import '../../test-sdk/config.js'
 
-let kenvName = `mock-kenv`
-ava.serial("kenv create", async t => {
+let kenvName = 'mock-kenv'
+ava.serial('kenv create', async (t) => {
   await $`KIT_MODE=js kit kenv-create ${kenvName}`
 
-  t.log(await readdir(kenvPath("kenvs")))
+  t.log(await readdir(kenvPath('kenvs')))
 
-  t.true(await pathExists(kenvPath("kenvs", kenvName)))
+  t.true(await pathExists(kenvPath('kenvs', kenvName)))
 })
 
-ava.serial("kenv remove", async t => {
+ava.serial('kenv remove', async (t) => {
   await $`KIT_MODE=js kit kenv-rm ${kenvName}`
 
-  t.log(await readdir(kenvPath("kenvs")))
+  t.log(await readdir(kenvPath('kenvs')))
 
-  t.false(await pathExists(kenvPath("kenvs", kenvName)))
+  t.false(await pathExists(kenvPath('kenvs', kenvName)))
 })

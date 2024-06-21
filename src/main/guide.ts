@@ -4,34 +4,32 @@
 // Pass: true
 // Enter: Open Guide
 
-import { createGuideConfig } from "./main-helper.js"
+import { createGuideConfig } from './main-helper.js'
 
 let selectedDoc = await docs(
-  kitPath("GUIDE.md"),
+  kitPath('GUIDE.md'),
   createGuideConfig({
-    name: "Guide",
-    guidePath: kitPath("GUIDE.md"),
+    name: 'Guide',
+    guidePath: kitPath('GUIDE.md'),
     itemHeight: PROMPT.ITEM.HEIGHT.SM,
-    input: arg?.input || arg?.input || "",
-    placeholder: "Browse Guide",
-    enter: `Open GUIDE.md`,
+    input: arg?.input || arg?.input || '',
+    placeholder: 'Browse Guide',
+    enter: 'Open GUIDE.md',
     preventCollapse: true,
-    onNoChoices: async input => {
+    onNoChoices: async (input) => {
       setPanel(
         md(`# Expected ${input} in the Guide?
 This guide is constantly evolving. If you're missing something, [suggest an edit](https://github.com/johnlindquist/kit-docs/blob/main/GUIDE.md) to the guide or open an issue on GitHub.
-`)
+`),
       )
     },
-  })
+  }),
 )
 
 // if selected docs is a url, then open it
-if (selectedDoc.startsWith("http")) {
+if (selectedDoc.startsWith('http')) {
   open(selectedDoc)
 } else {
-  await run(kitPath("cli", selectedDoc))
-  await mainScript("", "Guide")
+  await run(kitPath('cli', selectedDoc))
+  await mainScript('', 'Guide')
 }
-
-export {}

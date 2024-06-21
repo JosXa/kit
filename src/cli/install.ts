@@ -1,40 +1,34 @@
-import {
-  formatDistanceToNow,
-  parseISO,
-} from "@johnlindquist/kit-internal/date-fns"
-import { KIT_FIRST_PATH } from "../core/utils.js"
+import { formatDistanceToNow, parseISO } from '@johnlindquist/kit-internal/date-fns'
+import { KIT_FIRST_PATH } from '../core/utils.js'
 
-let install = async packageNames => {
+let install = async (packageNames) => {
   let cwd = kenvPath()
 
   if (process.env.SCRIPTS_DIR) {
     cwd = kenvPath(process.env.SCRIPTS_DIR)
   }
 
-  let isYarn = await isFile(kenvPath("yarn.lock"))
+  let isYarn = await isFile(kenvPath('yarn.lock'))
   let [tool, toolArgs] = (
-    isYarn
-      ? `yarn${global.isWin ? `.cmd` : ``} add`
-      : `npm${global.isWin ? `.cmd` : ``} i`
-  ).split(" ")
+    isYarn ? `yarn${global.isWin ? '.cmd' : ''} add` : `npm${global.isWin ? '.cmd' : ''} i`
+  ).split(' ')
 
   let toolPath = global.isWin
     ? isYarn
-      ? `yarn`
-      : knodePath("bin", "npm.cmd")
-    : `PATH=${knodePath("bin")}:$PATH ${tool}`
+      ? 'yarn'
+      : knodePath('bin', 'npm.cmd')
+    : `PATH=${knodePath('bin')}:$PATH ${tool}`
 
   let toolExists = await isBin(toolPath)
   if (!toolExists) {
-    toolPath = `npm`
+    toolPath = 'npm'
   }
 
-  let packages = packageNames.join(" ")
-  let command =
-    `${toolPath} ${toolArgs} -D ${packages}`.trim()
+  let packages = packageNames.join(' ')
+  let command = `${toolPath} ${toolArgs} -D ${packages}`.trim()
 
   return await term({
-    name: `npm install`,
+    name: 'npm install',
     command,
     env: {
       ...global.env,
@@ -46,19 +40,19 @@ let install = async packageNames => {
 
 let packages = await arg(
   {
-    enter: "Install",
-    placeholder:
-      "Which npm package/s would you like to install?",
+    enter: 'Install',
+    placeholder: 'Which npm package/s would you like to install?',
   },
-  async input => {
-    if (!input || input?.length < 3)
+  async (input) => {
+    if (!input || input?.length < 3) {
       return [
         {
           info: true,
           miss: true,
-          name: `Search for npm packages`,
+          name: 'Search for npm packages',
         },
       ]
+    }
     type pkgs = {
       objects: {
         package: {
@@ -68,26 +62,22 @@ let packages = await arg(
         }
       }[]
     }
-    let response = await get<pkgs>(
-      `http://registry.npmjs.com/-/v1/search?text=${input}&size=20`
-    )
+    let response = await get<pkgs>(`http://registry.npmjs.com/-/v1/search?text=${input}&size=20`)
     let packages = response.data.objects
-    return packages.map(o => {
+    return packages.map((o) => {
       return {
         name: o.package.name,
         value: o.package.name,
-        description: `${
-          o.package.description
-        } - ${formatDistanceToNow(
-          parseISO(o.package.date)
-        )} ago`,
+        description: `${o.package.description} - ${formatDistanceToNow(parseISO(o.package.date))} ago`,
       }
     })
-  }
+  },
 )
 
-let installNames = [...packages.split(" ")]
-if (process?.send) global.setChoices([])
+let installNames = [...packages.split(' ')]
+if (process?.send) {
+  global.setChoices([])
+}
 await install([...installNames, ...args, ...argOpts])
 
 export { packages }

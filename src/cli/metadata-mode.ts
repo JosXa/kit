@@ -1,18 +1,15 @@
-import { getEnvVar, setEnvVar } from "../api/kit.js"
-import { Env } from "../core/enum.js"
+import { getEnvVar, setEnvVar } from '../api/kit.js'
+import { Env } from '../core/enum.js'
 
-export const METADATA_MODE_ENV_KEY =
-  "KIT_METADATA_MODE" as const
+export const METADATA_MODE_ENV_KEY = 'KIT_METADATA_MODE' as const
 
-export async function getUserDefaultMetadataMode(
-  forcePrompt: boolean = false
-) {
+export async function getUserDefaultMetadataMode(forcePrompt = false) {
   if (forcePrompt) {
     await setEnvVar(METADATA_MODE_ENV_KEY, Env.REMOVE)
   }
 
   const tsOrJsCodeExample =
-    (await getEnvVar("KIT_MODE", "ts")) === "ts"
+    (await getEnvVar('KIT_MODE', 'ts')) === 'ts'
       ? `
 export const metadata: Metadata = {
   name: "My Script",
@@ -49,37 +46,33 @@ ${tsOrJsCodeExample}
 
 You will have autocompletion and type safety, but it is more difficult to write a parser for.`
 
-  const buildPreview = (mode: "comment" | "convention") => {
+  const buildPreview = (mode: 'comment' | 'convention') => {
     if (!mode) {
       return undefined
     }
     return md(
       `There are two metadata modes: 
   **Comment** based and **Convention** based.<br><br>
-  Using the ${mode}-based approach, ${
-        mode === "comment"
-          ? COMMENT_BASED_EXPLANATION
-          : CONVENTION_BASED_EXPLANATION
-      }
-  `
+  Using the ${mode}-based approach, ${mode === 'comment' ? COMMENT_BASED_EXPLANATION : CONVENTION_BASED_EXPLANATION}
+  `,
     )
   }
 
-  return (await env("KIT_METADATA_MODE", {
-    placeholder: "Please choose",
-    hint: "Choose your preferred metadata mode",
+  return (await env('KIT_METADATA_MODE', {
+    placeholder: 'Please choose',
+    hint: 'Choose your preferred metadata mode',
     choices: [
       {
-        name: "Comment-based",
-        value: "comment",
-        preview: buildPreview("comment"),
+        name: 'Comment-based',
+        value: 'comment',
+        preview: buildPreview('comment'),
       },
       {
-        name: "Convention-based",
-        value: "convention",
-        preview: buildPreview("convention"),
+        name: 'Convention-based',
+        value: 'convention',
+        preview: buildPreview('convention'),
       },
     ],
     strict: true,
-  })) as "comment" | "convention"
+  })) as 'comment' | 'convention'
 }

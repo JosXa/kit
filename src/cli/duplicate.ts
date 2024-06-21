@@ -1,21 +1,13 @@
 // Description: Duplicate the selected script
 
-import {
-  checkIfCommandExists,
-  stripName,
-  kitMode,
-  stripMetadata,
-  uniq,
-} from "../core/utils.js"
-import { generate } from "@johnlindquist/kit-internal/project-name-generator"
+import { generate } from '@johnlindquist/kit-internal/project-name-generator'
+import { checkIfCommandExists, kitMode, stripMetadata, stripName, uniq } from '../core/utils.js'
 
 let examples = Array.from({ length: 3 })
   .map((_, i) => generate({ words: 2 }).dashed)
-  .join(", ")
+  .join(', ')
 
-let { filePath } = await selectScript(
-  "Select Script to Duplicate"
-)
+let { filePath } = await selectScript('Select Script to Duplicate')
 
 // TODO: Consider Using the "info" approach
 
@@ -23,25 +15,21 @@ let name = await arg(
   {
     description: `Duplicate ${filePath}`,
     debounceInput: 0,
-    placeholder: `Enter name for new script`,
-    validate: input => {
+    placeholder: 'Enter name for new script',
+    validate: (input) => {
       return checkIfCommandExists(stripName(input))
     },
     strict: false,
   },
-  input => [
+  (input) => [
     {
       info: true,
-      name: !input
-        ? `Enter a name for your script's // Name: metadata`
-        : `// Name: ${input}`,
-      description: !input
-        ? `The filename will be converted automatically.`
-        : `Filename will be convert to ${stripName(
-            input
-          )}.${kitMode()}`,
+      name: input ? `// Name: ${input}` : `Enter a name for your script's // Name: metadata`,
+      description: input
+        ? `Filename will be convert to ${stripName(input)}.${kitMode()}`
+        : 'The filename will be converted automatically.',
     },
-  ]
+  ],
 )
 
 if (!(await isFile(filePath))) {
@@ -50,36 +38,22 @@ if (!(await isFile(filePath))) {
 }
 
 let { dirPath: selectedKenvPath } = await selectKenv({
-  placeholder: `Select Where to Create Script`,
-  enter: "Create Script in Selected Kenv",
+  placeholder: 'Select Where to Create Script',
+  enter: 'Create Script in Selected Kenv',
 })
 
 let command = stripName(name)
 
-let scriptPath = path.join(
-  selectedKenvPath,
-  "scripts",
-  `${command}.${kitMode()}`
-)
-let oldContent = await readFile(filePath, "utf-8")
+let scriptPath = path.join(selectedKenvPath, 'scripts', `${command}.${kitMode()}`)
+let oldContent = await readFile(filePath, 'utf-8')
 
-let newContent = stripMetadata(oldContent, [
-  "Author",
-  "Twitter",
-  "Alias",
-  "Description",
-])
+let newContent = stripMetadata(oldContent, ['Author', 'Twitter', 'Alias', 'Description'])
 
 // Replace // Name: with // Name: ${name}
-newContent = newContent.replace(
-  /(\/\/\s+Name:).*/,
-  `$1 ${name}`
-)
+newContent = newContent.replace(/(\/\/\s+Name:).*/, `$1 ${name}`)
 
 await writeFile(scriptPath, newContent)
 
-await cli("create-bin", "scripts", scriptPath)
+await cli('create-bin', 'scripts', scriptPath)
 
-await run(kitPath("cli", "edit-script.js"), scriptPath)
-
-export {}
+await run(kitPath('cli', 'edit-script.js'), scriptPath)

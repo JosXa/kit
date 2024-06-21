@@ -1,3 +1,3 @@
 await selectKitEditor(true)
 await mainScript()
-export {}
+export type {}

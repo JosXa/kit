@@ -4,7 +4,7 @@
 // PreviewPath: $KIT/SIGN_IN.md
 // Pass: true
 
-import { authenticate } from "../api/kit.js"
+import { authenticate } from '../api/kit.js'
 
 hide()
 

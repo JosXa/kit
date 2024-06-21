@@ -1,3 +1,3 @@
-await open("https://twitter.com/scriptkitapp")
+await open('https://twitter.com/scriptkitapp')
 
-export {}
+export type {}

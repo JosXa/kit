@@ -1,2 +1,2 @@
-import { runUserHandlerIfExists } from "../cli/lib/utils.js"
-await runUserHandlerIfExists("browse", "~")
+import { runUserHandlerIfExists } from '../cli/lib/utils.js'
+await runUserHandlerIfExists('browse', '~')

@@ -1,3 +1,3 @@
-await cli("set-env-var", "KIT_PRO", await arg())
+await cli('set-env-var', 'KIT_PRO', await arg())
 
-export {}
+export type {}

@@ -1,6 +1,6 @@
-import { globby } from "globby"
-import { Channel } from "../../core/enum.js"
-import fs from "fs"
+import fs from 'node:fs'
+import { globby } from 'globby'
+import { Channel } from '../../core/enum.js'
 
 export interface Options {
   readonly glob?: boolean
@@ -8,17 +8,15 @@ export interface Options {
 
 export default async function trash(
   input: string | readonly string[],
-  options: Options = { glob: true }
+  options: Options = { glob: true },
 ): Promise<void> {
   // Normalize input to an array of strings
   const inputs = Array.isArray(input) ? input : [input]
 
   // Use globby to match files if glob option is enabled
-  const pathsToTrash = options.glob
-    ? await globby(inputs)
-    : inputs
+  const pathsToTrash = options.glob ? await globby(inputs) : inputs
 
-  if (process.env.KIT_CONTEXT === "app") {
+  if (process.env.KIT_CONTEXT === 'app') {
     return await sendWaitLong(Channel.TRASH, pathsToTrash)
   }
 
@@ -43,5 +41,3 @@ export default async function trash(
 
 global.trash = trash
 global.rm = trash
-
-export {}

@@ -1,14 +1,12 @@
 // TODO: Move to kitdeps
 
-import { minimist } from "@johnlindquist/kit-internal/minimist"
+import { minimist } from '@johnlindquist/kit-internal/minimist'
 
-let nodePtyString = "node-pty"
+let nodePtyString = 'node-pty'
 
 let { default: pty } = (await import(nodePtyString)) as any
-let { default: express } = (await import("express")) as any
-let { default: expressWs } = (await import(
-  "express-ws"
-)) as any
+let { default: express } = (await import('express')) as any
+let { default: expressWs } = (await import('express-ws')) as any
 
 let argv = minimist(process.argv.slice(2))
 let command = argv?._?.[0]?.trim()
@@ -17,41 +15,36 @@ let appBase = express()
 let wsInstance = expressWs(appBase)
 let { app } = wsInstance
 
-let port: string | number = ``
-let socketURL = ``
+let port: string | number = ''
+let socketURL = ''
 
-let t = pty.spawn(
-  process?.env?.KIT_SHELL ||
-    (process.platform === "win32" ? "cmd.exe" : "zsh"),
-  [],
-  {
-    name: "xterm-256color",
-    cols: 80,
-    rows: 24,
-    cwd: process.cwd(),
-    env: process.env,
-    encoding: "utf8",
-  }
-)
+let t = pty.spawn(process?.env?.KIT_SHELL || (process.platform === 'win32' ? 'cmd.exe' : 'zsh'), [], {
+  name: 'xterm-256color',
+  cols: 80,
+  rows: 24,
+  cwd: process.cwd(),
+  env: process.env,
+  encoding: 'utf8',
+})
 
-app.ws("/terminals/:pid", function (ws, req) {
-  console.log("Connected to terminal " + t.pid)
+app.ws('/terminals/:pid', (ws, req) => {
+  console.log('Connected to terminal ' + t.pid)
 
   if (command) {
     setTimeout(() => {
-      t.write(command + "\n")
+      t.write(command + '\n')
     }, 250)
   }
   // string message buffering
   function buffer(socket, timeout) {
-    let s = ""
+    let s = ''
     let sender = null
-    return data => {
+    return (data) => {
       s += data
       if (!sender) {
         sender = setTimeout(() => {
           socket.send(s)
-          s = ""
+          s = ''
           sender = null
         }, timeout)
       }
@@ -62,13 +55,14 @@ app.ws("/terminals/:pid", function (ws, req) {
     let buffer = []
     let sender = null
     let length = 0
-    return data => {
-      if (typeof data === "string")
-        data = Buffer.from(data, "utf8")
+    return (data) => {
+      if (typeof data === 'string') {
+        data = Buffer.from(data, 'utf8')
+      }
       buffer.push(data)
 
       process.send({
-        data: data.toString("utf8"),
+        data: data.toString('utf8'),
         port,
         socketURL,
       })
@@ -84,12 +78,9 @@ app.ws("/terminals/:pid", function (ws, req) {
       }
     }
   }
-  const sendData =
-    process.platform !== "win32"
-      ? bufferUtf8(ws, 5)
-      : buffer(ws, 5)
+  const sendData = process.platform !== 'win32' ? bufferUtf8(ws, 5) : buffer(ws, 5)
 
-  t.onData(data => {
+  t.onData((data) => {
     try {
       sendData(data)
     } catch (ex) {
@@ -99,29 +90,30 @@ app.ws("/terminals/:pid", function (ws, req) {
 
   t.onExit(() => {
     ws.close()
-    if (t) t.kill()
+    if (t) {
+      t.kill()
+    }
     t = null
   })
-  ws.on("message", function (msg: string) {
+  ws.on('message', (msg: string) => {
     t.write(msg)
   })
-  ws.on("close", function () {
-    if (t) t.kill()
+  ws.on('close', () => {
+    if (t) {
+      t.kill()
+    }
     t = null
     // console.log("Closed terminal " + t.pid)
     // Clean things up
   })
 })
 
-let getPortString = "get-port"
-let { default: getPort } = (await import(
-  getPortString
-)) as any
+let getPortString = 'get-port'
+let { default: getPort } = (await import(getPortString)) as any
 
 port = process.env.PORT || (await getPort({ port: 3131 }))
 
-let host =
-  process.platform === "win32" ? "127.0.0.1" : "0.0.0.0"
+let host = process.platform === 'win32' ? '127.0.0.1' : '0.0.0.0'
 
 socketURL = `ws://${host}:${port}`
 console.log(`👂 Listening on ${socketURL}`)
@@ -130,7 +122,5 @@ app.listen(port)
 process.send({
   port,
   socketURL,
-  data: ``,
+  data: '',
 })
-
-export {}

@@ -1,23 +1,19 @@
 // Name: Testing Extreme Caution
 
-import { getTrustedKenvsKey } from "../core/utils.js"
+import { getTrustedKenvsKey } from '../core/utils.js'
 
 let trustedKenvsKey = getTrustedKenvsKey()
 
-let currentTrustedKenvs = process.env[trustedKenvsKey]
-  ?.split(",")
-  .filter(Boolean)
+let currentTrustedKenvs = process.env[trustedKenvsKey]?.split(',').filter(Boolean)
 
 let hasTrustedKenvs = currentTrustedKenvs?.length > 0
 
 let trustedKenvs: any[] = [
   {
     info: true,
-    name: hasTrustedKenvs
-      ? "Select a kenv to distrust"
-      : "No trusted kenvs",
+    name: hasTrustedKenvs ? 'Select a kenv to distrust' : 'No trusted kenvs',
     description: hasTrustedKenvs
-      ? `Prevent scripts from this kenv from running automatically`
+      ? 'Prevent scripts from this kenv from running automatically'
       : `Use "Trust Kenv" to manually trust a kenv`,
   },
   ...currentTrustedKenvs,
@@ -26,21 +22,21 @@ let trustedKenvs: any[] = [
 // Removes the kenv from the .env
 let kenv = await arg(
   {
-    placeholder: "Distrust which kenv",
+    placeholder: 'Distrust which kenv',
   },
-  trustedKenvs
+  trustedKenvs,
 )
 
-if (typeof process?.env?.[trustedKenvsKey] === "string") {
+if (typeof process?.env?.[trustedKenvsKey] === 'string') {
   let newValue = process.env[trustedKenvsKey]
-    .split(",")
+    .split(',')
     .filter(Boolean)
-    .filter(k => k !== kenv)
-    .join(",")
+    .filter((k) => k !== kenv)
+    .join(',')
 
-  await global.cli("set-env-var", trustedKenvsKey, newValue)
+  await global.cli('set-env-var', trustedKenvsKey, newValue)
 }
 
-if (process.env.KIT_CONTEXT === "app") {
+if (process.env.KIT_CONTEXT === 'app') {
   await mainScript()
 }

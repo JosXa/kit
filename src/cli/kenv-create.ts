@@ -1,17 +1,16 @@
-if (process.env.KIT_CONTEXT === "app") {
-  let buildPreview = async (kenv = "") => {
-    let exists =
-      kenv && (await isDir(kenvPath("kenvs", kenv)))
+if (process.env.KIT_CONTEXT === 'app') {
+  let buildPreview = async (kenv = '') => {
+    let exists = kenv && (await isDir(kenvPath('kenvs', kenv)))
 
     if (exists) {
-      setEnter("")
+      setEnter('')
       return md(`
   # "${kenv}" kenv already exists
 
 "${kenv}" already exists here:
 
 ~~~bash
-${kenvPath("kenvs", kenv)}
+${kenvPath('kenvs', kenv)}
 ~~~
 
 Pick a different kenv name.
@@ -19,7 +18,7 @@ Pick a different kenv name.
   `)
     }
 
-    setEnter(kenv ? `Create "${kenv}"` : "")
+    setEnter(kenv ? `Create "${kenv}"` : '')
 
     return md(`  
 # Create a "Kit Environment" AKA "kenv"
@@ -29,7 +28,7 @@ ${
   `Create the following kenv:
 
 ~~~bash
-${kenvPath("kenvs", kenv)}
+${kenvPath('kenvs', kenv)}
 ~~~
 
 `
@@ -67,27 +66,27 @@ Additional kenvs are located:
 
   let [kenv, init, username] = await fields({
     preview: await buildPreview(),
-    enter: "",
-    height: PROMPT.HEIGHT["3XL"],
+    enter: '',
+    height: PROMPT.HEIGHT['3XL'],
     fields: [
       {
-        name: "kenv",
-        placeholder: `my-new-kenv`,
-        label: `Name your kenv`,
+        name: 'kenv',
+        placeholder: 'my-new-kenv',
+        label: 'Name your kenv',
       },
       {
-        name: "init",
-        placeholder: "y/n",
-        label: `Initialize as a git repo?`,
+        name: 'init',
+        placeholder: 'y/n',
+        label: 'Initialize as a git repo?',
       },
       {
-        name: "remote",
-        placeholder: "GitHub username",
-        label: `Enter a GitHub username to set up a remote repo`,
+        name: 'remote',
+        placeholder: 'GitHub username',
+        label: 'Enter a GitHub username to set up a remote repo',
       },
     ],
-    input: "",
-    placeholder: "Name of new kenv:",
+    input: '',
+    placeholder: 'Name of new kenv:',
     onChange: async (input, state) => {
       let [kenv, init, remote] = state.value
       let preview = await buildPreview(kenv)
@@ -95,26 +94,28 @@ Additional kenvs are located:
     },
   })
 
-  let newKenvPath = kenvPath("kenvs", kenv)
-  if (!newKenvPath) exit()
-  await ensureDir(kenvPath("kenvs"))
+  let newKenvPath = kenvPath('kenvs', kenv)
+  if (!newKenvPath) {
+    exit()
+  }
+  await ensureDir(kenvPath('kenvs'))
 
-  let noInit = init !== "y"
+  let noInit = init !== 'y'
 
   if (noInit) {
-    let kenvRepo = degit(`johnlindquist/kenv-template`)
+    let kenvRepo = degit('johnlindquist/kenv-template')
     await kenvRepo.clone(newKenvPath)
   }
 
-  let noClone = init === "y" && !username
+  let noClone = init === 'y' && !username
 
   if (noClone) {
-    let kenvRepo = degit(`johnlindquist/kenv-template`)
+    let kenvRepo = degit('johnlindquist/kenv-template')
     await kenvRepo.clone(newKenvPath)
     await git.init(newKenvPath)
   }
 
-  let yesClone = init === "y" && username
+  let yesClone = init === 'y' && username
 
   if (yesClone) {
     let url = `https://github.com/${username}/${kenv}`
@@ -138,7 +139,7 @@ git clone ${url} ${kenv}
 
 - The app is polling if the url exists every 2 seconds
 - The process will timeout after 1 minute if the repo isn't created
-    `.trim()
+    `.trim(),
     )
 
     let html = `
@@ -162,38 +163,33 @@ git clone ${url} ${kenv}
     let attemptLimit = 30
 
     await div({
-      name: "Waiting for kenv repo to be created",
-      enter: "",
+      name: 'Waiting for kenv repo to be created',
+      enter: '',
       shortcuts: [
         {
           key: `${cmd}+o`,
-          name: "Open URL",
+          name: 'Open URL',
           onPress: () => {
             open(createUrl)
           },
-          bar: "right",
+          bar: 'right',
         },
         {
           key: `${cmd}+t`,
-          name: "Manaully Clone in Terminal",
+          name: 'Manaully Clone in Terminal',
           onPress: async () => {
             setTimeout(() => {
-              term.write(
-                `git clone https://github.com/johnlindquist/kenv-template ${kenv}`
-              )
+              term.write(`git clone https://github.com/johnlindquist/kenv-template ${kenv}`)
             }, 2000)
-            await cli("kenv-term", kenvPath("kenvs"))
+            await cli('kenv-term', kenvPath('kenvs'))
           },
-          bar: "left",
+          bar: 'left',
         },
       ],
       html,
       ...xxs,
       onInit: async () => {
-        while (
-          response?.status !== 200 &&
-          attempt < attemptLimit
-        ) {
+        while (response?.status !== 200 && attempt < attemptLimit) {
           await wait(2000)
           try {
             response = await get(url)
@@ -203,7 +199,7 @@ git clone ${url} ${kenv}
         }
 
         await wait(2000)
-        submit("done")
+        submit('done')
       },
     })
     if (response?.status === 200) {
@@ -211,7 +207,7 @@ git clone ${url} ${kenv}
     }
   }
 
-  let body = ``
+  let body = ''
   if (noInit) {
     body = `## "${kenv}" Not Initialized as a Git Repo
   
@@ -243,17 +239,17 @@ You can push/pull your kenv from the Kit tab -> Manage Kenvs`
 
   let exists = await isDir(newKenvPath)
   if (exists) {
-    await cli("kenv-trust", kenv, kenv)
+    await cli('kenv-trust', kenv, kenv)
     await div({
-      enter: "Main Menu",
+      enter: 'Main Menu',
       shortcuts: [
         {
-          name: `Open in Terminal`,
+          name: 'Open in Terminal',
           key: `${cmd}+t`,
           onPress: async () => {
-            await cli("kenv-term", newKenvPath)
+            await cli('kenv-term', newKenvPath)
           },
-          bar: "right",
+          bar: 'right',
         },
       ],
       html: md(`# "${kenv}" kenv created
@@ -265,7 +261,7 @@ ${body}
     })
   } else {
     await div({
-      enter: "Continue to Main Menu",
+      enter: 'Continue to Main Menu',
       html: md(`# "${kenv}" kenv Failed to Create
 
 Please ask for help:
@@ -277,34 +273,34 @@ Please ask for help:
     })
   }
 
-  if (process.env.KIT_CONTEXT === "app") {
+  if (process.env.KIT_CONTEXT === 'app') {
     await mainScript()
   }
 } else {
-  let noInput = `Please name your kit environment directory`
+  let noInput = 'Please name your kit environment directory'
 
-  let onInput = async input => {
-    let newKenvPath = kenvPath("kenvs", input)
+  let onInput = async (input) => {
+    let newKenvPath = kenvPath('kenvs', input)
     let exists = await isDir(newKenvPath)
     let panel = md(
-      !input
-        ? noInput
-        : exists
-        ? `## ⚠️ A kenv named \`${input}\` already exists`
-        : `## Create a kit environment
+      input
+        ? exists
+          ? `## ⚠️ A kenv named \`${input}\` already exists`
+          : `## Create a kit environment
 \`${newKenvPath}\`
   
 > Next time you create a script, you will be prompted to select a kit environment.`
+        : noInput,
     )
     setPanel(panel)
   }
 
   let newKenvName = await arg(
     {
-      input: "",
-      placeholder: "Name of new kenv:",
-      validate: async input => {
-        let attemptPath = kenvPath("kenvs", input)
+      input: '',
+      placeholder: 'Name of new kenv:',
+      validate: async (input) => {
+        let attemptPath = kenvPath('kenvs', input)
         let exists = await isDir(attemptPath)
         if (exists) {
           return `${attemptPath} already exists...`
@@ -313,21 +309,23 @@ Please ask for help:
         return true
       },
     },
-    onInput
+    onInput,
   )
 
-  let newKenvPath = kenvPath("kenvs", newKenvName)
+  let newKenvPath = kenvPath('kenvs', newKenvName)
 
-  if (!newKenvPath) exit()
-  await ensureDir(kenvPath("kenvs"))
+  if (!newKenvPath) {
+    exit()
+  }
+  await ensureDir(kenvPath('kenvs'))
 
-  let kenvRepo = degit(`johnlindquist/kenv-template`)
+  let kenvRepo = degit('johnlindquist/kenv-template')
 
   await kenvRepo.clone(newKenvPath)
 
-  if (process.env.KIT_CONTEXT === "app") {
+  if (process.env.KIT_CONTEXT === 'app') {
     await mainScript()
   }
 }
 
-export {}
+export type {}

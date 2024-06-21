@@ -13,7 +13,7 @@ Create a new snippet based on the current input
 let snippet = await template(
   `// Name: $0
 
-${arg?.pass || ""}`,
+${arg?.pass || ''}`,
   {
     preview: md(`# Create a New Snippet
 
@@ -24,8 +24,8 @@ Press "s" then space from the main menu to search your snippets.
 ## Snippet Name
 
 The file name will be inferred from the text following "// Name:". Snippets are saved to _${kenvPath(
-      "snippets",
-      "your-file-name.txt"
+      'snippets',
+      'your-file-name.txt',
     )}_ 
 
 "//Name: Hello World" will be saved as "hello-world.txt" and appear as "Hello World" in the snippets menu.
@@ -99,12 +99,12 @@ await setSelectedText(result)
 ~~~
 Create a script and use variables from your script inside your template.
   `),
-  }
+  },
 )
 
 let name = snippet.match(/\/\/ Name: (.*)/)[1]
-name = name.replace(/ /g, "-").toLowerCase() + ".txt"
+name = name.replace(/ /g, '-').toLowerCase() + '.txt'
 
-await writeFile(kenvPath("snippets", name), snippet)
+await writeFile(kenvPath('snippets', name), snippet)
 
-export {}
+export type {}

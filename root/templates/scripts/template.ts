@@ -1,8 +1,8 @@
 // Template: true
 
-import "@johnlindquist/kit"
+import '@johnlindquist/kit'
 
-let name = await arg("Enter name")
+let name = await arg('Enter name')
 
 let template = `
 Hello, ${name}!

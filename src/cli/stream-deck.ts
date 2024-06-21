@@ -3,32 +3,25 @@
 //Author: John Lindquist
 //Twitter: @johnlindquist
 
-let createCommand = (
-  launchApp: boolean,
-  scriptPath: string
-) =>
-  launchApp
-    ? `~/.kit/kar ${scriptPath}`
-    : `~/.kit/script ${scriptPath}`
+let createCommand = (launchApp: boolean, scriptPath: string) =>
+  launchApp ? `~/.kit/kar ${scriptPath}` : `~/.kit/script ${scriptPath}`
 
-let { command, filePath } = await selectScript(
-  "Prepare which script for Stream Deck?"
-)
+let { command, filePath } = await selectScript('Prepare which script for Stream Deck?')
 
-let launchApp = await arg<boolean>("Run the script:", [
+let launchApp = await arg<boolean>('Run the script:', [
   {
-    name: "with the prompt",
+    name: 'with the prompt',
     value: true,
-    description: ".sh that opens the prompt",
+    description: '.sh that opens the prompt',
   },
   {
-    name: "no prompt",
+    name: 'no prompt',
     value: false,
-    description: ".sh that runs in the background",
+    description: '.sh that runs in the background',
   },
 ])
 
-let binPath = kenvPath("deck", command + ".sh")
+let binPath = kenvPath('deck', command + '.sh')
 await ensureDir(path.dirname(binPath))
 await writeFile(binPath, createCommand(launchApp, filePath))
 chmod(755, binPath)
@@ -46,14 +39,11 @@ let info = `
 
 **Create a System->Open action and paste here:**
 
-![Stream Deck Setup](${kitPath(
-  "images",
-  "stream-deck.png"
-)})
+![Stream Deck Setup](${kitPath('images', 'stream-deck.png')})
 `
 
 await div(await highlight(info))
 
-openApp("Elgato Stream Deck.app")
+openApp('Elgato Stream Deck.app')
 
-export {}
+export type {}

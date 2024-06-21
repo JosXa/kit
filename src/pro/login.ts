@@ -1,7 +1,7 @@
 // Name: Login to GitHub
 // Description: Authenticate to Enable Features
 
-import { authenticate } from "../api/kit.js"
+import { authenticate } from '../api/kit.js'
 
 await div(
   md(`
@@ -19,11 +19,9 @@ await div(
 - Sync Scripts to GitHub Repo
 - Run Scripts as GitHub Actions
 - 
-`)
+`),
 )
 
 await authenticate()
 
 await mainScript()
-
-export {}

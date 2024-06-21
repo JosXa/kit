@@ -1,9 +1,9 @@
-import "@johnlindquist/kit"
-import { getLogFromScriptPath } from "../core/utils.js"
+import '@johnlindquist/kit'
+import { getLogFromScriptPath } from '../core/utils.js'
 
-let scriptPath = await arg("Script Path")
+let scriptPath = await arg('Script Path')
 
-let Convert = await npm("ansi-to-html")
+let Convert = await npm('ansi-to-html')
 let convert = new Convert()
 
 let logWidget = await widget(
@@ -27,13 +27,13 @@ observer.observe(logEl, {childList: true})
     height: 320,
     alwaysOnTop: true,
     state: {
-      log: `<p>Logging...</p>`,
+      log: '<p>Logging...</p>',
     },
-  }
+  },
 )
 
-let currentHtml = ``
-let handleLog = line => {
+let currentHtml = ''
+let handleLog = (line) => {
   let lineHtml = convert.toHtml(line)
   currentHtml += `<p>${lineHtml}</p>`
 

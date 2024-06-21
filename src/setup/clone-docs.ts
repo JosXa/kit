@@ -1,6 +1,4 @@
-cd(kenvPath("kenvs"))
-await exec(
-  `git clone https://github.com/johnlindquist/kit-docs docs`
-)
+cd(kenvPath('kenvs'))
+await exec('git clone https://github.com/johnlindquist/kit-docs docs')
 
-export {}
+export type {}

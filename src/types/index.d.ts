@@ -1,16 +1,11 @@
-import { GlobalsApi } from "@johnlindquist/globals"
-import { AppApi } from "./kitapp"
-import { KitApi, Run } from "./kit"
-import { PackagesApi } from "./packages"
-import { PlatformApi } from "./platform"
-import { ProAPI } from "./pro"
+import type { GlobalsApi } from '@johnlindquist/globals'
+import type { KitApi, Run } from './kit'
+import type { AppApi } from './kitapp'
+import type { PackagesApi } from './packages'
+import type { PlatformApi } from './platform'
+import type { ProAPI } from './pro'
 
-export type GlobalApi = Omit<GlobalsApi, "path"> &
-  KitApi &
-  PackagesApi &
-  PlatformApi &
-  AppApi &
-  ProAPI
+export type GlobalApi = Omit<GlobalsApi, 'path'> & KitApi & PackagesApi & PlatformApi & AppApi & ProAPI
 
 declare global {
   var kit: GlobalApi & Run
@@ -20,7 +15,7 @@ declare global {
   }
 }
 
-export * from "./core"
-export * from "../core/utils"
+export * from './core'
+export * from '../core/utils'
 
 export default kit

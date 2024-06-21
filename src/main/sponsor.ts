@@ -6,28 +6,18 @@
 // Pass: true
 // FocusedClassName: shadow-md shadow-primary/25 bg-gradient-to-r from-transparent to-primary-50
 
-let sponsorUrl = `https://github.com/sponsors/johnlindquist/sponsorships?sponsor=johnlindquist&tier_id=235205`
+let sponsorUrl = 'https://github.com/sponsors/johnlindquist/sponsorships?sponsor=johnlindquist&tier_id=235205'
 try {
-  sponsorUrl = (
-    await readFile(
-      kitPath("data", "sponsor-url.txt"),
-      "utf-8"
-    )
-  ).trim()
+  sponsorUrl = (await readFile(kitPath('data', 'sponsor-url.txt'), 'utf-8')).trim()
 } catch (error) {
-  warn(`Failed to read sponsor-url.txt`)
+  warn('Failed to read sponsor-url.txt')
 }
 try {
-  sponsorUrl = (
-    await readFile(
-      kitPath("data", "sponsor-url.txt"),
-      "utf-8"
-    )
-  ).trim()
+  sponsorUrl = (await readFile(kitPath('data', 'sponsor-url.txt'), 'utf-8')).trim()
 } catch (error) {
-  warn(`Failed to read sponsor-url.txt`)
+  warn('Failed to read sponsor-url.txt')
 }
 
 open(sponsorUrl)
 
-export {}
+export type {}

@@ -3,50 +3,36 @@
 // Enter: View Account
 // Pass: true
 
-import { authenticate } from "../api/kit.js"
-import { getUserJson, setUserJson } from "../core/db.js"
-import { Channel } from "../core/enum.js"
-import {
-  escapeShortcut,
-  cmd,
-  proPane,
-} from "../core/utils.js"
+import { authenticate } from '../api/kit.js'
+import { getUserJson, setUserJson } from '../core/db.js'
+import { Channel } from '../core/enum.js'
+import { cmd, escapeShortcut, proPane } from '../core/utils.js'
 setChoices([])
 
-let sponsorUrl = `https://github.com/sponsors/johnlindquist/sponsorships?sponsor=johnlindquist&tier_id=235205`
+let sponsorUrl = 'https://github.com/sponsors/johnlindquist/sponsorships?sponsor=johnlindquist&tier_id=235205'
 try {
-  sponsorUrl = (
-    await readFile(
-      kitPath("data", "sponsor-url.txt"),
-      "utf-8"
-    )
-  ).trim()
+  sponsorUrl = (await readFile(kitPath('data', 'sponsor-url.txt'), 'utf-8')).trim()
 } catch (error) {
-  warn(`Failed to read sponsor-url.txt`)
+  warn('Failed to read sponsor-url.txt')
 }
 try {
-  sponsorUrl = (
-    await readFile(
-      kitPath("data", "sponsor-url.txt"),
-      "utf-8"
-    )
-  ).trim()
+  sponsorUrl = (await readFile(kitPath('data', 'sponsor-url.txt'), 'utf-8')).trim()
 } catch (error) {
-  warn(`Failed to read sponsor-url.txt`)
+  warn('Failed to read sponsor-url.txt')
 }
 let userJson = await getUserJson()
 let appState = await getAppState()
 if (userJson.login) {
   let option = await arg(
     {
-      placeholder: "Account Actions",
+      placeholder: 'Account Actions',
       shortcuts: [escapeShortcut],
-      onNoChoices: async input => {
+      onNoChoices: async (input) => {
         if (input) {
           setPanel(
             md(`# Expected ${input} in the Account Tab?
   Share your idea 💡 [Request on GitHub Discussions](https://github.com/johnlindquist/kit/discussions/categories/ideas)
-    `)
+    `),
           )
         }
       },
@@ -56,23 +42,23 @@ if (userJson.login) {
         ? []
         : [
             {
-              name: "Unlock Script Kit Pro",
+              name: 'Unlock Script Kit Pro',
               preview: md(proPane()),
-              value: "pro",
-              enter: "Go Pro",
+              value: 'pro',
+              enter: 'Go Pro',
             },
             {
-              name: "Check Pro Status",
+              name: 'Check Pro Status',
               preview: md(`# Ping the Script Kit Pro Server
       
       This will check your Pro status and update your account if successful.
               `),
-              value: "pro-status",
-              enter: "Check Status",
+              value: 'pro-status',
+              enter: 'Check Status',
             },
           ]),
       {
-        name: "Join Script Kit Discord",
+        name: 'Join Script Kit Discord',
         preview: md(`# Join Us on the Script Kit Discord
 
 We're a friendly bunch, sharing scripts and discussing ideas in a relaxed atmosphere. 
@@ -81,13 +67,13 @@ Come join our awesome community and let's grow as scripters together!
 
 [Join Discord Server](submit:discord)
                     `),
-        value: "discord",
-        enter: "Join Discord Server",
+        value: 'discord',
+        enter: 'Join Discord Server',
       },
       {
-        name: "Sign Out",
-        value: "logout",
-        enter: "Logout",
+        name: 'Sign Out',
+        value: 'logout',
+        enter: 'Logout',
         preview: md(`# Log Out of Your GitHub Account
 
 This will remove your GitHub token from your local machine and Script Kit will no longer be able to access your GitHub account.
@@ -95,51 +81,48 @@ This will remove your GitHub token from your local machine and Script Kit will n
 You can always log back in again later.
 `),
       },
-    ]
+    ],
   )
   switch (option) {
-    case "pro":
+    case 'pro':
       open(sponsorUrl)
       break
-    case "discord":
-      let response = await get(
-        `https://scriptkit.com/api/discord-invite`
-      )
+    case 'discord': {
+      let response = await get('https://scriptkit.com/api/discord-invite')
       open(response.data)
       break
-    case "pro-status":
+    }
+    case 'pro-status': {
       let isSponsor = await sendWait(Channel.PRO_STATUS)
       if (isSponsor) {
-        await div(md(`# You are a Sponsor! Thank you!`))
+        await div(md('# You are a Sponsor! Thank you!'))
       } else {
         await div(
           md(`# You are not currently a Sponsor...
         
 Please go to [${sponsorUrl}](${sponsorUrl}) to become a sponsor to unlock all features.
-        `)
+        `),
         )
       }
 
       break
-    case "logout":
+    }
+    case 'logout': {
       await setUserJson({})
       await replace({
-        files: kenvPath(".env"),
+        files: kenvPath('.env'),
         from: /GITHUB_SCRIPTKIT_TOKEN=.*/g,
-        to: ``,
+        to: '',
         disableGlobs: true,
       })
-      process.env.GITHUB_SCRIPTKIT_TOKEN =
-        env.GITHUB_SCRIPTKIT_TOKEN = ``
+      process.env.GITHUB_SCRIPTKIT_TOKEN = env.GITHUB_SCRIPTKIT_TOKEN = ''
 
       await mainScript()
       break
+    }
   }
 } else {
-  let topPane = md(
-    `# Unlock the Full Power of Script Kit!`,
-    "px-5 pt-5 prose dark:prose-dark prose-sm"
-  )
+  let topPane = md('# Unlock the Full Power of Script Kit!', 'px-5 pt-5 prose dark:prose-dark prose-sm')
   let leftPane = md(`
 <h2 class="text-xl">No Account</h2>
 
@@ -162,24 +145,24 @@ Please go to [${sponsorUrl}](${sponsorUrl}) to become a sponsor to unlock all fe
 </div>
 `)
   let option = await div({
-    enter: "Sign In",
-    name: `Sign in with GitHub to unlock all features.`,
-    description: "",
+    enter: 'Sign In',
+    name: 'Sign in with GitHub to unlock all features.',
+    description: '',
     html: `
       <div class="flex flex-col">
       ${topPane}
       <div class="flex flex-row">  
         <div class="px-4">${middlePane}</div>
         <div class="px-4 flex-1 border-l border-white dark:border-dark dark:border border-opacity-25 dark:border-opacity-25">${md(
-          proPane()
+          proPane(),
         )}</div>
       </div>
       </div>`,
     shortcuts: [
       {
-        name: "Go Pro",
+        name: 'Go Pro',
         key: `${cmd}+o`,
-        bar: "right",
+        bar: 'right',
         onPress: async (input, { focused }) => {
           open(sponsorUrl)
         },
@@ -187,7 +170,7 @@ Please go to [${sponsorUrl}](${sponsorUrl}) to become a sponsor to unlock all fe
     ],
   })
   switch (option) {
-    case "pro":
+    case 'pro':
       open(sponsorUrl)
       break
     default:

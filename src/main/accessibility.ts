@@ -1,7 +1,7 @@
 // Name: Enable Accessibility
 // Description: Enable Clipboard and Keyboard Watching
 
-import { Channel } from "../core/enum.js"
+import { Channel } from '../core/enum.js'
 
 await div({
   html: md(`## Prompting for Accessibility Permissions

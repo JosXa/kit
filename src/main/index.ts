@@ -4,36 +4,26 @@
 // UI: arg
 // Exclude: true
 // Cache: true
-performance.measure("index", "run")
+performance.measure('index', 'run')
 
-import { Channel, Value } from "../core/enum.js"
-import {
-  run,
-  cmd,
-  getMainScriptPath,
-} from "../core/utils.js"
-import { Script } from "../types/core.js"
-import {
-  mainMenu,
-  scriptFlags,
-  actions,
-  modifiers,
-  errorPrompt,
-} from "../api/kit.js"
-import { Open } from "../types/packages.js"
+import { actions, errorPrompt, mainMenu, modifiers, scriptFlags } from '../api/kit.js'
+import { Channel, Value } from '../core/enum.js'
+import { cmd, getMainScriptPath, run } from '../core/utils.js'
+import type { Script } from '../types/core.js'
+import type { Open } from '../types/packages.js'
 
 console.clear()
 
-if (env.KIT_EDITOR !== "code") {
-  scriptFlags["code"] = {
-    group: "Script Actions",
-    name: "Open Kenv in VS Code",
+if (env.KIT_EDITOR !== 'code') {
+  scriptFlags.code = {
+    group: 'Script Actions',
+    name: 'Open Kenv in VS Code',
     description: "Open the script's kenv in VS Code",
     shortcut: `${cmd}+shift+o`,
   }
 }
 
-let panel = ``
+let panel = ''
 
 // let submitted = false
 // let onInput = input => {
@@ -45,7 +35,7 @@ let panel = ``
 
 let onNoChoices = async (input, state) => {
   // if (submitted) return
-  if (input && state.flaggedValue === "") {
+  if (input && state.flaggedValue === '') {
     let regex = /[!@#$%^&*()_+\=\[\]{};':"\\|,.<>\/?]/g
     let invalid = regex.test(input)
 
@@ -57,9 +47,9 @@ No matches found for <code>${input}</code>`)
     }
 
     let scriptName = input
-      .replace(/[^\w\s-]/g, "")
+      .replace(/[^\w\s-]/g, '')
       .trim()
-      .replace(/\s/g, "-")
+      .replace(/\s/g, '-')
       .toLowerCase()
 
     panel = md(`# Quick New Script
@@ -87,16 +77,16 @@ Create a script named <code>${scriptName}</code>
 
 let isApp = false
 let isPass = false
-let input = ""
+let input = ''
 
 trace.instant({
-  args: "mainMenu",
+  args: 'mainMenu',
 })
 let script = await mainMenu({
-  name: "Main",
-  description: "Script Kit",
-  placeholder: "Script Kit",
-  enter: "Run",
+  name: 'Main',
+  description: 'Script Kit',
+  placeholder: 'Script Kit',
+  enter: 'Run',
   strict: false,
   flags: scriptFlags,
   onMenuToggle: async (input, state) => {
@@ -109,12 +99,12 @@ let script = await mainMenu({
     if (keyword) {
       if (value?.filePath) {
         preload(value?.filePath)
-        await run(value.filePath, `--keyword`, keyword)
+        await run(value.filePath, '--keyword', keyword)
       }
     }
   },
 
-  onSubmit: i => {
+  onSubmit: (i) => {
     if (i) {
       input = i.trim()
     }
@@ -125,12 +115,8 @@ let script = await mainMenu({
   },
   onNoChoices,
   onChoiceFocus: async (input, state) => {
-    isApp =
-      state?.focused?.group === "Apps" ||
-      state?.focused?.group === "Community"
-    isPass =
-      state?.focused?.group === "Pass" &&
-      !state?.focused?.exact
+    isApp = state?.focused?.group === 'Apps' || state?.focused?.group === 'Community'
+    isPass = state?.focused?.group === 'Pass' && !state?.focused?.exact
   },
   // footer: `Script Options: ${cmd}+k`,
   shortcodes: {
@@ -150,40 +136,40 @@ let script = await mainMenu({
     // "<": kitPath("handler", "lessthan-handler.js"),
     // "-": kitPath("handler", "minus-handler.js"),
     // "[": kitPath("handler", "leftbracket-handler.js"),
-    "1": kitPath("handler", "number-handler.js") + ` 1`,
-    "2": kitPath("handler", "number-handler.js") + ` 2`,
-    "3": kitPath("handler", "number-handler.js") + ` 3`,
-    "4": kitPath("handler", "number-handler.js") + ` 4`,
-    "5": kitPath("handler", "number-handler.js") + ` 5`,
-    "6": kitPath("handler", "number-handler.js") + ` 6`,
-    "7": kitPath("handler", "number-handler.js") + ` 7`,
-    "8": kitPath("handler", "number-handler.js") + ` 8`,
-    "9": kitPath("handler", "number-handler.js") + ` 9`,
+    '1': kitPath('handler', 'number-handler.js') + ' 1',
+    '2': kitPath('handler', 'number-handler.js') + ' 2',
+    '3': kitPath('handler', 'number-handler.js') + ' 3',
+    '4': kitPath('handler', 'number-handler.js') + ' 4',
+    '5': kitPath('handler', 'number-handler.js') + ' 5',
+    '6': kitPath('handler', 'number-handler.js') + ' 6',
+    '7': kitPath('handler', 'number-handler.js') + ' 7',
+    '8': kitPath('handler', 'number-handler.js') + ' 8',
+    '9': kitPath('handler', 'number-handler.js') + ' 9',
     // "0": kitPath("handler", "zero-handler.js"),
     // "?": kitPath("handler", "question-handler.js"),
   },
 
   actions,
-  input: arg?.input || "",
+  input: arg?.input || '',
 })
 
 trace.instant({
-  args: "mainMenu submitted",
+  args: 'mainMenu submitted',
 })
 
 if (!script && Object.keys(flag).length === 0) {
   await errorPrompt({
-    message: `An unknown error occurred. Please try again.`,
-    name: "No Script or Flag Detected",
+    message: 'An unknown error occurred. Please try again.',
+    name: 'No Script or Flag Detected',
   })
 }
 
-if (typeof script === "boolean" && !script) {
+if (typeof script === 'boolean' && !script) {
   exit()
 }
 
 const runScript = async (script: Script | string) => {
-  if (isApp && typeof script === "string") {
+  if (isApp && typeof script === 'string') {
     return await Promise.all([
       hide({
         preloadScript: getMainScriptPath(),
@@ -193,24 +179,17 @@ const runScript = async (script: Script | string) => {
   }
 
   if (isPass || (script as Script)?.postfix) {
-    return await run(
-      (script as Script)?.filePath,
-      `--pass`,
-      (script as any).postfix || input
-    )
+    return await run((script as Script)?.filePath, '--pass', (script as any).postfix || input)
   }
 
-  if (
-    script === Value.NoValue ||
-    typeof script === "undefined"
-  ) {
-    console.warn(`🤔 No script selected`, script)
+  if (script === Value.NoValue || typeof script === 'undefined') {
+    console.warn('🤔 No script selected', script)
     return
   }
 
-  if (typeof script === "string") {
-    if (script === "kit-sponsor") {
-      return await run(kitPath("main", "sponsor.js"))
+  if (typeof script === 'string') {
+    if (script === 'kit-sponsor') {
+      return await run(kitPath('main', 'sponsor.js'))
     }
 
     let scriptPath = script as string
@@ -220,53 +199,41 @@ const runScript = async (script: Script | string) => {
     }
 
     return await run(
-      `${kitPath("cli", "new")}.js`,
-      scriptPath.trim().replace(/\s/g, "-").toLowerCase(),
-      `--scriptName`,
-      scriptPath.trim()
+      `${kitPath('cli', 'new')}.js`,
+      scriptPath.trim().replace(/\s/g, '-').toLowerCase(),
+      '--scriptName',
+      scriptPath.trim(),
     )
   }
 
   let shouldEdit = flag?.open
 
-  let selectedFlag: string | undefined = Object.keys(
-    flag
-  ).find(f => {
+  let selectedFlag: string | undefined = Object.keys(flag).find((f) => {
     return f && !modifiers[f]
   })
 
   if (selectedFlag && flag?.code) {
-    return await exec(
-      `open -a 'Visual Studio Code' '${path.dirname(
-        path.dirname(script.filePath)
-      )}'`
-    )
+    return await exec(`open -a 'Visual Studio Code' '${path.dirname(path.dirname(script.filePath))}'`)
   }
 
-  if (selectedFlag && selectedFlag === "settings") {
-    return await run(kitPath("main", "kit.js"))
+  if (selectedFlag && selectedFlag === 'settings') {
+    return await run(kitPath('main', 'kit.js'))
   }
-  if (selectedFlag && selectedFlag?.startsWith("kenv")) {
-    let k = script.kenv || "main"
-    if (selectedFlag === "kenv-term") {
+  if (selectedFlag?.startsWith('kenv')) {
+    let k = script.kenv || 'main'
+    if (selectedFlag === 'kenv-term') {
       k = path.dirname(path.dirname(script.filePath))
     }
 
-    return await run(
-      `${kitPath("cli", selectedFlag)}.js`,
-      k
-    )
+    return await run(`${kitPath('cli', selectedFlag)}.js`, k)
   }
 
-  if (selectedFlag && selectedFlag?.endsWith("menu")) {
-    return await run(`${kitPath("cli", selectedFlag)}.js`)
+  if (selectedFlag?.endsWith('menu')) {
+    return await run(`${kitPath('cli', selectedFlag)}.js`)
   }
 
   if (selectedFlag && !flag?.open) {
-    return await run(
-      `${kitPath("cli", selectedFlag)}.js`,
-      script.filePath
-    )
+    return await run(`${kitPath('cli', selectedFlag)}.js`, script.filePath)
   }
 
   if (flag[modifiers.opt]) {
@@ -274,10 +241,7 @@ const runScript = async (script: Script | string) => {
   }
 
   if (script.background) {
-    return await run(
-      kitPath("cli", "toggle-background.js"),
-      script?.filePath
-    )
+    return await run(kitPath('cli', 'toggle-background.js'), script?.filePath)
   }
 
   if (shouldEdit) {
@@ -288,21 +252,18 @@ const runScript = async (script: Script | string) => {
     return await sendWait(Channel.SHEBANG, script)
   }
 
-  if (script?.group === "Links") {
+  if (script?.group === 'Links') {
     return await open(script.value)
   }
 
-  if (script && script?.filePath) {
+  if (script?.filePath) {
     preload(script?.filePath)
-    let runP = run(
-      script.filePath,
-      ...Object.keys(flag).map(f => `--${f}`)
-    )
+    let runP = run(script.filePath, ...Object.keys(flag).map((f) => `--${f}`))
 
     return await runP
   }
 
-  return await arg("How did you get here?")
+  return await arg('How did you get here?')
 }
 
 await runScript(script)

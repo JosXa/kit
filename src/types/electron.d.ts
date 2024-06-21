@@ -39,10 +39,7 @@ export interface Display {
   /**
    * Can be `available`, `unavailable`, `unknown`.
    */
-  accelerometerSupport:
-    | "available"
-    | "unavailable"
-    | "unknown"
+  accelerometerSupport: 'available' | 'unavailable' | 'unknown'
   /**
    * the bounds of the display in DIP points.
    */
@@ -88,7 +85,7 @@ export interface Display {
   /**
    * Can be `available`, `unavailable`, `unknown`.
    */
-  touchSupport: "available" | "unavailable" | "unknown"
+  touchSupport: 'available' | 'unavailable' | 'unknown'
   /**
    * the work area of the display in DIP points.
    */
@@ -281,17 +278,13 @@ interface BrowserWindowConstructorOptions {
    * Specify how the material appearance should reflect window activity state on
    * macOS. Must be used with the `vibrancy` property. Possible values are:
    */
-  visualEffectState?: "followWindow" | "active" | "inactive"
+  visualEffectState?: 'followWindow' | 'active' | 'inactive'
   /**
    * The style of window title bar. Default is `default`. Possible values are:
    *
    * @platform darwin,win32
    */
-  titleBarStyle?:
-    | "default"
-    | "hidden"
-    | "hiddenInset"
-    | "customButtonsOnHover"
+  titleBarStyle?: 'default' | 'hidden' | 'hiddenInset' | 'customButtonsOnHover'
   /**
    * Set a custom position for the traffic light buttons in frameless windows.
    */
@@ -323,25 +316,25 @@ interface BrowserWindowConstructorOptions {
    * are deprecated and have been removed in macOS Catalina (10.15).
    */
   vibrancy?:
-    | "appearance-based"
-    | "light"
-    | "dark"
-    | "titlebar"
-    | "selection"
-    | "menu"
-    | "popover"
-    | "sidebar"
-    | "medium-light"
-    | "ultra-dark"
-    | "header"
-    | "sheet"
-    | "window"
-    | "hud"
-    | "fullscreen-ui"
-    | "tooltip"
-    | "content"
-    | "under-window"
-    | "under-page"
+    | 'appearance-based'
+    | 'light'
+    | 'dark'
+    | 'titlebar'
+    | 'selection'
+    | 'menu'
+    | 'popover'
+    | 'sidebar'
+    | 'medium-light'
+    | 'ultra-dark'
+    | 'header'
+    | 'sheet'
+    | 'window'
+    | 'hud'
+    | 'fullscreen-ui'
+    | 'tooltip'
+    | 'content'
+    | 'under-window'
+    | 'under-page'
   /**
    * Controls the behavior on macOS when option-clicking the green stoplight button
    * on the toolbar or by clicking the Window > Zoom menu item. If `true`, the window
@@ -467,10 +460,7 @@ interface WebPreferences {
    * Specifies how to run image animations (E.g. GIFs).  Can be `animate`,
    * `animateOnce` or `noAnimation`.  Default is `animate`.
    */
-  imageAnimationPolicy?:
-    | "animate"
-    | "animateOnce"
-    | "noAnimation"
+  imageAnimationPolicy?: 'animate' | 'animateOnce' | 'noAnimation'
   /**
    * Make TextArea elements resizable. Default is `true`.
    */
@@ -591,10 +581,7 @@ interface WebPreferences {
    * `no-user-gesture-required`, `user-gesture-required`,
    * `document-user-activation-required`. Defaults to `no-user-gesture-required`.
    */
-  autoplayPolicy?:
-    | "no-user-gesture-required"
-    | "user-gesture-required"
-    | "document-user-activation-required"
+  autoplayPolicy?: 'no-user-gesture-required' | 'user-gesture-required' | 'document-user-activation-required'
   /**
    * Whether to prevent the window from resizing when entering HTML Fullscreen.
    * Default is `false`.
@@ -616,11 +603,7 @@ interface WebPreferences {
   /**
    * Enforces the v8 code caching policy used by blink. Accepted values are
    */
-  v8CacheOptions?:
-    | "none"
-    | "code"
-    | "bypassHeatCheck"
-    | "bypassHeatCheckAndEagerCompile"
+  v8CacheOptions?: 'none' | 'code' | 'bypassHeatCheck' | 'bypassHeatCheckAndEagerCompile'
   /**
    * Whether to enable preferred size mode. The preferred size is the minimum size
    * needed to contain the layout of the document—without requiring scrolling.

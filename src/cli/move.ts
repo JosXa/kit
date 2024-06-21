@@ -1,12 +1,12 @@
 // Description: Move script to different kenv
 
-import { getKenvs, trashScriptBin } from "../core/utils.js"
+import { getKenvs, trashScriptBin } from '../core/utils.js'
 
-import { createBinFromScript } from "./lib/utils.js"
+import { createBinFromScript } from './lib/utils.js'
 
-import { Bin } from "../core/enum.js"
-import { refreshScripts } from "../core/db.js"
-import { Script } from "../types/core.js"
+import { refreshScripts } from '../core/db.js'
+import { Bin } from '../core/enum.js'
+import type { Script } from '../types/core.js'
 
 let script = await selectScript()
 
@@ -16,39 +16,32 @@ let selectedKenvDir = kenvPath()
 
 selectedKenvDir = await arg(
   {
-    placeholder: `Select target kenv`,
+    placeholder: 'Select target kenv',
     hint: script.filePath,
   },
   [
     {
-      name: "main",
+      name: 'main',
       description: `Your main kenv: ${kenvPath()}`,
       value: kenvPath(),
     },
-    ...kenvDirs.map(kenvDir => {
+    ...kenvDirs.map((kenvDir) => {
       return {
         name: path.basename(kenvDir),
         description: kenvDir,
         value: kenvDir,
       }
     }),
-  ]
+  ],
 )
 
 let exists = false
-let target = filePath =>
-  path.join(
-    selectedKenvDir,
-    "scripts",
-    path.basename(filePath)
-  )
+let target = (filePath) => path.join(selectedKenvDir, 'scripts', path.basename(filePath))
 
 while (true) {
   if (!script) {
     script = (await selectScript({
-      placeholder: exists
-        ? `Sorry, ${script.command} already exists. Pick another`
-        : `Move another script to kenv?`,
+      placeholder: exists ? `Sorry, ${script.command} already exists. Pick another` : 'Move another script to kenv?',
       hint: selectedKenvDir,
     })) as Script
   }
@@ -65,5 +58,3 @@ while (true) {
 
   script = null
 }
-
-export {}

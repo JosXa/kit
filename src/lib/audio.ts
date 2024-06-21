@@ -1,10 +1,10 @@
-import { Channel } from "../core/enum.js"
+import { Channel } from '../core/enum.js'
 
 global.playAudioFile = async (
   filePath,
   options = {
     rate: 1.0,
-  }
+  },
 ) => {
   return await sendWait(
     Channel.PLAY_AUDIO,
@@ -12,7 +12,7 @@ global.playAudioFile = async (
       filePath,
       ...options,
     },
-    0
+    0,
   )
 }
 
@@ -24,8 +24,8 @@ global.say = async (
   text,
   options = {
     rate: 1.2,
-    name: "Daniel",
-  }
+    name: 'Daniel',
+  },
 ) => {
   await sendWait(
     Channel.SPEAK_TEXT,
@@ -33,7 +33,7 @@ global.say = async (
       text,
       ...options,
     },
-    0
+    0,
   )
 
   return text
@@ -42,5 +42,3 @@ global.say = async (
 global.beep = async () => {
   await sendWait(Channel.BEEP)
 }
-
-export {}

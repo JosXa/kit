@@ -1,3 +1,3 @@
-await cli("reveal", kitPath("package.json"))
+await cli('reveal', kitPath('package.json'))
 
-export {}
+export type {}

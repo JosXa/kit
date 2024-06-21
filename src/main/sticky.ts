@@ -11,12 +11,12 @@ Notes are saved to `~/.kenv/sticky.md`.
 // Cache: true
 // Trigger: ,
 
-let stickyPath = kenvPath("sticky.md")
+let stickyPath = kenvPath('sticky.md')
 let contents = await ensureReadFile(
   stickyPath,
   `
 # Sticky Notes
-`.trim()
+`.trim(),
 )
 
 let changed = false
@@ -28,18 +28,18 @@ ${arg?.pass}`
 
 contents = await editor({
   value: contents,
-  scrollTo: "bottom",
+  scrollTo: 'bottom',
   // footer: `Escape to save to ${stickyPath}`,
   shortcuts: [
     {
-      name: "Save and Close",
-      key: "escape",
+      name: 'Save and Close',
+      key: 'escape',
       onPress: async (input, { inputChanged }) => {
         changed = inputChanged
         await hide()
         await submit(input)
       },
-      bar: "right",
+      bar: 'right',
     },
   ],
   onAbandon: async (input, { inputChanged }) => {
@@ -52,7 +52,7 @@ contents = await editor({
 })
 
 if (changed || arg?.pass) {
-  await writeFile(stickyPath, contents + "\n")
+  await writeFile(stickyPath, contents + '\n')
 }
 
-export {}
+export type {}

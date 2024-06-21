@@ -1,5 +1,5 @@
-import { Channel } from "../core/enum.js"
-import { Bounds } from "../types/platform"
+import { Channel } from '../core/enum.js'
+import type { Bounds } from '../types/platform'
 
 let utils = String.raw`on findAndReplaceInText(theText, theSearchString, theReplacementString)
 set AppleScript's text item delimiters to theSearchString
@@ -80,8 +80,7 @@ end tell
 }
 
 global.getWindowsBounds = async () => {
-  let result =
-    await applescript(String.raw`set listOfWindows to ""
+  let result = await applescript(String.raw`set listOfWindows to ""
 	tell application "System Events"
 		
 		set listOfProcesses to name of every process whose visible is true
@@ -126,12 +125,7 @@ global.setWindowPosition = async (process, title, x, y) => {
 end tell`)
 }
 
-global.setWindowSizeByIndex = async (
-  process,
-  index,
-  x,
-  y
-) => {
+global.setWindowSizeByIndex = async (process, index, x, y) => {
   return await applescript(String.raw`
 		tell application "System Events"
 		set theProcessWindow to window of process "${process}"
@@ -145,14 +139,7 @@ global.setWindowSizeByIndex = async (
 	end tell`)
 }
 
-global.setWindowBoundsByIndex = async (
-  process,
-  index,
-  x,
-  y,
-  width,
-  height
-) => {
+global.setWindowBoundsByIndex = async (process, index, x, y, width, height) => {
   return await applescript(String.raw`
 		  tell application "System Events"
 		  set theProcessWindow to window of process "${process}"
@@ -227,28 +214,13 @@ global.organizeWindows = async () => {
     //   windowWidth,
     //   windowHeight,
     // })
-    await setWindowSizeByIndex(
-      process,
-      index,
-      windowWidth,
-      windowHeight
-    )
+    await setWindowSizeByIndex(process, index, windowWidth, windowHeight)
 
-    await setWindowPositionByIndex(
-      process,
-      index,
-      windowX,
-      windowY
-    )
+    await setWindowPositionByIndex(process, index, windowX, windowY)
   })
 }
 
-global.setWindowPositionByIndex = async (
-  process,
-  index,
-  x,
-  y
-) => {
+global.setWindowPositionByIndex = async (process, index, x, y) => {
   return await applescript(String.raw`
 		tell application "System Events"
 		set theProcessWindow to window of process "${process}"
@@ -276,9 +248,7 @@ global.setWindowSize = async (process, title, x, y) => {
   end tell`)
 }
 
-global.getScreens = async () =>
-  (await global.getDataFromApp(Channel.GET_SCREENS_INFO))
-    .displays
+global.getScreens = async () => (await global.getDataFromApp(Channel.GET_SCREENS_INFO)).displays
 
 global.tileWindow = async (app, leftOrRight) => {
   return await applescript(String.raw`
@@ -291,22 +261,16 @@ end tell
 	`)
 }
 
-global.getActiveScreen = async () =>
-  (await global.getDataFromApp(Channel.GET_SCREEN_INFO))
-    .activeScreen
+global.getActiveScreen = async () => (await global.getDataFromApp(Channel.GET_SCREEN_INFO)).activeScreen
 
-global.getMousePosition = async () =>
-  (await global.getDataFromApp(Channel.GET_MOUSE))
-    .mouseCursor
+global.getMousePosition = async () => (await global.getDataFromApp(Channel.GET_MOUSE)).mouseCursor
 
-global.getProcesses = async () =>
-  (await global.getDataFromApp(Channel.GET_PROCESSES))
-    .processes
+global.getProcesses = async () => (await global.getDataFromApp(Channel.GET_PROCESSES)).processes
 global.getPrompts = async () => {
-  let { prompts } = await global.getDataFromApp(
-    Channel.GET_PROMPTS
-  )
-  if (!prompts) return []
+  let { prompts } = await global.getDataFromApp(Channel.GET_PROMPTS)
+  if (!prompts) {
+    return []
+  }
   for (let prompt of prompts) {
     prompt.focus = async () => {
       await hide()
@@ -319,9 +283,7 @@ global.getPrompts = async () => {
 }
 
 global.getKitWindows = async () => {
-  let message = await global.getDataFromApp(
-    Channel.GET_KIT_WINDOWS
-  )
+  let message = await global.getDataFromApp(Channel.GET_KIT_WINDOWS)
 
   return message.windows
 }
@@ -330,20 +292,13 @@ global.focusKitWindow = async (id: string) => {
   return sendWait(Channel.FOCUS_KIT_WINDOW, { id })
 }
 
-global.setActiveAppBounds = async ({
-  left,
-  top,
-  right,
-  bottom,
-}) => {
+global.setActiveAppBounds = async ({ left, top, right, bottom }) => {
   await applescript(
     `tell application "System Events"
       set processName to name of first application process whose frontmost is true as text
       tell process processName to set the position of front window to {${left}, ${top}}
-      tell process processName to set the size of front window to {${
-        right - left
-      }, ${bottom - top}}
-    end tell`
+      tell process processName to set the size of front window to {${right - left}, ${bottom - top}}
+    end tell`,
   )
 }
 global.setActiveAppPosition = async ({ x, y }) => {
@@ -351,7 +306,7 @@ global.setActiveAppPosition = async ({ x, y }) => {
     `tell application "System Events"
       set processName to name of first application process whose frontmost is true as text
       tell process processName to set the position of front window to {${x}, ${y}}      
-    end tell`
+    end tell`,
   )
 }
 
@@ -360,12 +315,11 @@ global.setActiveAppSize = async ({ width, height }) => {
     `tell application "System Events"
       set processName to name of first application process whose frontmost is true as text
       tell process processName to set the size of front window to {${width}, ${height}}
-    end tell`
+    end tell`,
   )
 }
 
-global.getActiveAppInfo = async () =>
-  (await global.getDataFromApp(Channel.GET_ACTIVE_APP)).app
+global.getActiveAppInfo = async () => (await global.getDataFromApp(Channel.GET_ACTIVE_APP)).app
 
 global.getActiveAppBounds = async () => {
   let stringBounds = await applescript(String.raw`
@@ -392,11 +346,8 @@ get V's JSON
 
   let jsonBounds = JSON.parse(stringBounds)[0]
 
-  return Object.entries(jsonBounds).reduce(
-    (acc, [key, value]: [string, string]) => {
-      acc[key] = parseInt(value, 10)
-      return acc
-    },
-    {}
-  ) as Bounds
+  return Object.entries(jsonBounds).reduce((acc, [key, value]: [string, string]) => {
+    acc[key] = Number.parseInt(value, 10)
+    return acc
+  }, {}) as Bounds
 }

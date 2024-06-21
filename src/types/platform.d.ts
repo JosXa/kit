@@ -1,53 +1,26 @@
-import { ProcessInfo } from "./core"
-import { Display, Point } from "./electron"
-import type {
-  BrowserContextOptions,
-  Page,
-  PageScreenshotOptions,
-} from "playwright"
+import type { BrowserContextOptions, Page, PageScreenshotOptions } from 'playwright'
+import type { ProcessInfo } from './core'
+import type { Display, Point } from './electron'
 
-interface PlayAudioFile {
-  (path: string, options?: any): Promise<string>
-}
+type PlayAudioFile = (path: string, options?: any) => Promise<string>
 
-interface StopAudioFile {
-  (): Promise<void>
-}
+type StopAudioFile = () => Promise<void>
 
-interface CopyPathAsImage {
-  (path: string): Promise<string>
-}
+type CopyPathAsImage = (path: string) => Promise<string>
 
 interface FileSearchOptions {
   onlyin?: string
   kind?: string
   kMDItemContentType?: string
 }
-interface FileSearch {
-  (
-    name: string,
-    fileSearchOptions?: FileSearchOptions
-  ): Promise<string[]>
-}
+type FileSearch = (name: string, fileSearchOptions?: FileSearchOptions) => Promise<string[]>
 
-type Browser =
-  | "Google Chrome"
-  | "Brave"
-  | "Firefox"
-  | "Edge"
+type Browser = 'Google Chrome' | 'Brave' | 'Firefox' | 'Edge'
 
-interface GetActiveTab {
-  (browser?: Browser): Promise<string>
-}
-interface GetTabs {
-  (browser?: Browser): Promise<
-    { url: string; title: string }[]
-  >
-}
+type GetActiveTab = (browser?: Browser) => Promise<string>
+type GetTabs = (browser?: Browser) => Promise<{ url: string; title: string }[]>
 
-interface FocusTab {
-  (url: string, browser?: Browser): Promise<string>
-}
+type FocusTab = (url: string, browser?: Browser) => Promise<string>
 
 interface ScrapeOptions {
   headless?: boolean
@@ -60,27 +33,23 @@ interface ScrapeOptions {
   browserOptions?: BrowserContextOptions
 }
 
-interface ScrapeSelector<T = any> {
-  (
-    url: string,
-    selector: string,
-    /**
-     * Transformation to apply to each DOM node that was selected.
-     * By default, `element.innerText` is returned.
-     */
-    transform?: (element: any) => T,
-    options?: ScrapeOptions
-  ): Promise<T[]>
-}
+type ScrapeSelector<T = any> = (
+  url: string,
+  selector: string,
+  /**
+   * Transformation to apply to each DOM node that was selected.
+   * By default, `element.innerText` is returned.
+   */
+  transform?: (element: any) => T,
+  options?: ScrapeOptions,
+) => Promise<T[]>
 
-interface ScrapeAttribute {
-  (
-    url: string,
-    selector: string,
-    attribute: string,
-    options?: ScrapeOptions
-  ): Promise<string | null>
-}
+type ScrapeAttribute = (
+  url: string,
+  selector: string,
+  attribute: string,
+  options?: ScrapeOptions,
+) => Promise<string | null>
 interface ScreenshotFromWebpageOptions {
   timeout?: number
   /**
@@ -97,12 +66,7 @@ interface ScreenshotFromWebpageOptions {
   screenshotOptions?: PageScreenshotOptions
 }
 
-interface GetScreenshotFromWebpage {
-  (
-    url: string,
-    options?: ScreenshotFromWebpageOptions
-  ): Promise<Buffer>
-}
+type GetScreenshotFromWebpage = (url: string, options?: ScreenshotFromWebpageOptions) => Promise<Buffer>
 
 interface WebpageAsPdfOptions {
   timeout?: number
@@ -117,34 +81,25 @@ interface WebpageAsPdfOptions {
    *
    * {@link https://playwright.dev/docs/api/class-page#page-pdf}
    */
-  pdfOptions?: Parameters<Page["pdf"]>[0]
+  pdfOptions?: Parameters<Page['pdf']>[0]
   /**
    * Playwright page emulate media options.
    *
    * {@link https://playwright.dev/docs/api/class-page#page-emulate-media}
    */
-  mediaOptions?: Parameters<Page["emulateMedia"]>[0]
+  mediaOptions?: Parameters<Page['emulateMedia']>[0]
 }
 
-interface GetWebpageAsPdf {
-  (
-    url: string,
-    options?: WebpageAsPdfOptions
-  ): Promise<Buffer>
-}
+type GetWebpageAsPdf = (url: string, options?: WebpageAsPdfOptions) => Promise<Buffer>
 
 interface Window {
   process: string
   title: string
   index: number
 }
-interface GetWindows {
-  (): Promise<Window[]>
-}
+type GetWindows = () => Promise<Window[]>
 
-interface FocusWindow {
-  (process: string, title: string): Promise<string>
-}
+type FocusWindow = (process: string, title: string) => Promise<string>
 
 interface WindowBounds {
   process: string
@@ -153,70 +108,27 @@ interface WindowBounds {
   size: { width: number; height: number }
   fullscreen: boolean
 }
-interface GetWindowsBounds {
-  (): Promise<WindowBounds[]>
-}
-interface GetWindowPosition {
-  (
-    process: string,
-    title: string,
-    x: number,
-    y: number
-  ): Promise<string>
-}
+type GetWindowsBounds = () => Promise<WindowBounds[]>
+type GetWindowPosition = (process: string, title: string, x: number, y: number) => Promise<string>
 
-interface SetWindowPosition {
-  (
-    process: string,
-    title: string,
-    x: number,
-    y: number
-  ): Promise<string>
-}
-interface SetWindowSizeByIndex {
-  (
-    process: string,
-    index: number,
-    x: number,
-    y: number
-  ): Promise<string>
-}
-interface SetWindowBoundsByIndex {
-  (
-    process: string,
-    index: number,
-    x: number,
-    y: number,
-    width: number,
-    height: number
-  ): Promise<string>
-}
+type SetWindowPosition = (process: string, title: string, x: number, y: number) => Promise<string>
+type SetWindowSizeByIndex = (process: string, index: number, x: number, y: number) => Promise<string>
+type SetWindowBoundsByIndex = (
+  process: string,
+  index: number,
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+) => Promise<string>
 
-interface ScatterWindows {
-  (): Promise<string>
-}
+type ScatterWindows = () => Promise<string>
 
-interface OrganizeWindows {
-  (): Promise<void>
-}
+type OrganizeWindows = () => Promise<void>
 
-interface SetWindowPositionByIndex {
-  (
-    process: string,
-    index: number,
-    x: number,
-    y: number
-  ): Promise<string>
-}
+type SetWindowPositionByIndex = (process: string, index: number, x: number, y: number) => Promise<string>
 
-interface SetWindowSize {
-  (
-    process: string,
-    title: string,
-    x: number,
-    y: number
-  ): Promise<string>
-}
+type SetWindowSize = (process: string, title: string, x: number, y: number) => Promise<string>
 
 interface Screen {
   name: string
@@ -225,28 +137,15 @@ interface Screen {
   width: number
   height: number
 }
-interface GetScreens {
-  (): Promise<Display[]>
-}
+type GetScreens = () => Promise<Display[]>
 
-interface TileWindow {
-  (
-    app: string,
-    leftOrRight: "left" | "right"
-  ): Promise<string>
-}
+type TileWindow = (app: string, leftOrRight: 'left' | 'right') => Promise<string>
 
-interface GetActiveScreen {
-  (): Promise<Display>
-}
+type GetActiveScreen = () => Promise<Display>
 
-interface GetMousePosition {
-  (): Promise<Point>
-}
+type GetMousePosition = () => Promise<Point>
 
-interface GetProcesses {
-  (): Promise<ProcessInfo[]>
-}
+type GetProcesses = () => Promise<ProcessInfo[]>
 
 interface Rectangle {
   x: number
@@ -266,9 +165,7 @@ export interface Prompt {
   focus: () => Promise<void>
 }
 
-interface GetPrompts {
-  (): Promise<Prompt[]>
-}
+type GetPrompts = () => Promise<Prompt[]>
 interface KitWindow {
   name: string
   id: string
@@ -279,13 +176,9 @@ interface KitWindow {
   isDestroyed: boolean
 }
 
-interface GetKitWindows {
-  (): Promise<KitWindow[]>
-}
+type GetKitWindows = () => Promise<KitWindow[]>
 
-interface FocusAppWindow {
-  (id: string): Promise<void>
-}
+type FocusAppWindow = (id: string) => Promise<void>
 
 interface Bounds {
   left: number
@@ -293,107 +186,59 @@ interface Bounds {
   right: number
   bottom: number
 }
-interface SetActiveAppBounds {
-  (bounds: Bounds): Promise<void>
-}
-interface SetActiveAppPosition {
-  (position: { x: number; y: number }): Promise<void>
-}
-interface SetActiveAppSize {
-  (size: { width: number; height: number }): Promise<void>
-}
+type SetActiveAppBounds = (bounds: Bounds) => Promise<void>
+type SetActiveAppPosition = (position: { x: number; y: number }) => Promise<void>
+type SetActiveAppSize = (size: { width: number; height: number }) => Promise<void>
 
-interface GetActiveAppInfo {
-  (): Promise<{
-    localizedName: string
-    bundleIdentifier: string
-    bundleURLPath: string
-    executableURLPath: string
-    isFinishedLaunching: boolean
-    processIdentifier: number
-    windowTitle: string
-    windowIndex: number
-    windowID: number
-    x: number
-    y: number
-    width: number
-    height: number
-  }>
-}
-interface GetActiveAppBounds {
-  (): Promise<Bounds>
-}
+type GetActiveAppInfo = () => Promise<{
+  localizedName: string
+  bundleIdentifier: string
+  bundleURLPath: string
+  executableURLPath: string
+  isFinishedLaunching: boolean
+  processIdentifier: number
+  windowTitle: string
+  windowIndex: number
+  windowID: number
+  x: number
+  y: number
+  width: number
+  height: number
+}>
+type GetActiveAppBounds = () => Promise<Bounds>
 
-interface GetSelectedFile {
-  (): Promise<string>
-}
+type GetSelectedFile = () => Promise<string>
 
-interface SetSelectedFile {
-  (filePath: string): Promise<void>
-}
+type SetSelectedFile = (filePath: string) => Promise<void>
 
-interface GetSelectedDir {
-  (): Promise<string>
-}
-interface SelectFile {
-  (message?: string): Promise<string>
-}
+type GetSelectedDir = () => Promise<string>
+type SelectFile = (message?: string) => Promise<string>
 
-interface RevealFile {
-  (filePath: string): Promise<string>
-}
-interface RevealInFinder {
-  (filePath?: string): Promise<void>
-}
-interface SelectFolder {
-  (message?: string): Promise<string>
-}
+type RevealFile = (filePath: string) => Promise<string>
+type RevealInFinder = (filePath?: string) => Promise<void>
+type SelectFolder = (message?: string) => Promise<string>
 
-interface GetSelectedText {
-  (): Promise<string>
-}
+type GetSelectedText = () => Promise<string>
 
-interface CutText {
-  (): Promise<string>
-}
+type CutText = () => Promise<string>
 
-interface Lock {
-  (): Promise<string>
-}
+type Lock = () => Promise<string>
 
-interface Logout {
-  (): Promise<string>
-}
-interface Sleep {
-  (): Promise<string>
-}
-interface Shutdown {
-  (): Promise<string>
-}
+type Logout = () => Promise<string>
+type Sleep = () => Promise<string>
+type Shutdown = () => Promise<string>
 
-interface QuitAllApps {
-  (appsToExclude?: string): Promise<string>
-}
+type QuitAllApps = (appsToExclude?: string) => Promise<string>
 
-interface Say {
-  (text: string, options?: any): Promise<string>
-}
+type Say = (text: string, options?: any) => Promise<string>
 
-interface Beep {
-  (): Promise<void>
-}
+type Beep = () => Promise<void>
 
-interface SetSelectedText {
-  (text: string, hide?: boolean): Promise<void>
-}
+type SetSelectedText = (text: string, hide?: boolean) => Promise<void>
 
-interface KeyStroke {
-  (keyString: string): Promise<string>
-}
+type KeyStroke = (keyString: string) => Promise<string>
 
-interface AppleScript {
-  (script: string, options?: any): Promise<string>
-}
+type AppleScript = (script: string, options?: any) => Promise<string>
 
 export interface PlatformApi {
   applescript: AppleScript

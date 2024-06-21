@@ -1,10 +1,10 @@
-import notifier from "node-notifier"
+import notifier from 'node-notifier'
 
 global.notify = (...args) => {
-  if (typeof args[0] === "string") {
+  if (typeof args[0] === 'string') {
     let notification = args[0]
     args[0] = {
-      title: "Script Kit",
+      title: 'Script Kit',
       message: notification,
     }
   }

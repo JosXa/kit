@@ -1,1 +1,1 @@
-import "@johnlindquist/kit"
+import '@johnlindquist/kit'

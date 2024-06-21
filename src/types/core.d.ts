@@ -1,6 +1,6 @@
-import { ChildProcess } from "child_process"
-import { ProcessType, UI, Mode } from "../core/enum.js"
-import { AppMessage, Field } from "./kitapp.js"
+import type { ChildProcess } from 'node:child_process'
+import type { Mode, ProcessType, UI } from '../core/enum.js'
+import { AppMessage, Field } from './kitapp.js'
 
 export interface Choice<Value = any> {
   name: string
@@ -11,12 +11,7 @@ export interface Choice<Value = any> {
   icon?: string
   html?: string
   hasPreview?: boolean
-  preview?:
-    | string
-    | ((
-        input: string,
-        state: AppState
-      ) => string | Promise<string>)
+  preview?: string | ((input: string, state: AppState) => string | Promise<string>)
   previewPath?: string
   previewLang?: string
   id?: string
@@ -37,14 +32,8 @@ export interface Choice<Value = any> {
         data?: string
       }
     | string
-  onFocus?: (
-    input: string,
-    state: AppState
-  ) => string | Promise<string>
-  onSubmit?: (
-    input: string,
-    state: AppState
-  ) => void | Symbol | Promise<void | Symbol>
+  onFocus?: (input: string, state: AppState) => string | Promise<string>
+  onSubmit?: (input: string, state: AppState) => undefined | symbol | Promise<undefined | symbol>
   enter?: string
   disableSubmit?: boolean
   info?: boolean
@@ -55,7 +44,7 @@ export interface Choice<Value = any> {
   pass?: boolean | string
   group?: string
   userGrouped?: boolean
-  choices?: (Omit<Choice<any>, "choices"> | string)[]
+  choices?: (Omit<Choice<any>, 'choices'> | string)[]
   hideWithoutInput?: boolean
   ignoreFlags?: boolean
   selected?: boolean
@@ -104,7 +93,7 @@ export interface ScriptMetadata {
   schedule?: string
   system?: string
   watch?: string
-  background?: boolean | "auto"
+  background?: boolean | 'auto'
   type: ProcessType
   timeout?: number
   tabs?: string[]
@@ -121,12 +110,12 @@ export interface ScriptMetadata {
   snippetdelay?: number
   index?: string
   template?: boolean
-  ["color-text"]?: string
-  ["color-primary"]?: string
-  ["color-secondary"]?: string
-  ["color-background"]?: string
-  ["opacity"]?: string
-  preview?: Choice["preview"]
+  'color-text'?: string
+  'color-primary'?: string
+  'color-secondary'?: string
+  'color-background'?: string
+  opacity?: string
+  preview?: Choice['preview']
   previewPath?: string
   debug?: boolean
   cache?: boolean
@@ -139,9 +128,7 @@ export interface ScriptMetadata {
   postfix?: string
 }
 
-export type Script = ScriptMetadata &
-  ScriptPathInfo &
-  Choice
+export type Script = ScriptMetadata & ScriptPathInfo & Choice
 
 export type PromptBounds = {
   x?: number
@@ -161,39 +148,36 @@ export type PromptDb = {
 }
 
 export type InputType =
-  | "button"
-  | "checkbox"
-  | "color"
-  | "date"
-  | "datetime-local"
-  | "email"
-  | "file"
-  | "hidden"
-  | "image"
-  | "month"
-  | "number"
-  | "password"
-  | "radio"
-  | "range"
-  | "reset"
-  | "search"
-  | "submit"
-  | "tel"
-  | "text"
-  | "time"
-  | "url"
-  | "week"
+  | 'button'
+  | 'checkbox'
+  | 'color'
+  | 'date'
+  | 'datetime-local'
+  | 'email'
+  | 'file'
+  | 'hidden'
+  | 'image'
+  | 'month'
+  | 'number'
+  | 'password'
+  | 'radio'
+  | 'range'
+  | 'reset'
+  | 'search'
+  | 'submit'
+  | 'tel'
+  | 'text'
+  | 'time'
+  | 'url'
+  | 'week'
 
 export type Shortcut = {
   id?: string
   key: string
   name?: string
   value?: any
-  onPress?: (
-    input: string,
-    state: AppState
-  ) => unknown | Promise<unknown>
-  bar?: "right" | "left" | ""
+  onPress?: (input: string, state: AppState) => unknown | Promise<unknown>
+  bar?: 'right' | 'left' | ''
   flag?: string
   visible?: boolean
   condition?: (choice: any) => boolean
@@ -235,12 +219,7 @@ export interface PromptData {
   env: any
   shortcuts: Shortcut[]
   enter: string
-  choicesType:
-    | "string"
-    | "array"
-    | "function"
-    | "async"
-    | "null"
+  choicesType: 'string' | 'array' | 'function' | 'async' | 'null'
   x: number
   y: number
   width: number
@@ -269,13 +248,9 @@ export interface PromptData {
   show?: boolean
 }
 
-export interface GenerateChoices {
-  (input: string): Choice<any>[] | Promise<Choice<any>[]>
-}
+export type GenerateChoices = (input: string) => Choice<any>[] | Promise<Choice<any>[]>
 
-export interface GenerateActions {
-  (input: string): Action[] | Promise<Action[]>
-}
+export type GenerateActions = (input: string) => Action[] | Promise<Action[]>
 
 export type Choices<Value> = (
   | (string | Choice)[]
@@ -300,12 +275,7 @@ export type Preview =
   | ((input: string) => Promise<any>)
   | ((input: string) => Promise<void>)
 
-export type Actions =
-  | Action[]
-  | (() => Action[])
-  | (() => Promise<Action[]>)
-  | Promise<Action[]>
-  | GenerateActions
+export type Actions = Action[] | (() => Action[]) | (() => Promise<Action[]>) | Promise<Action[]> | GenerateActions
 
 export type Panel =
   | string
@@ -325,9 +295,9 @@ export type FlagsWithKeys = {
     name?: string
     group?: string
     description?: string
-    bar?: "left" | "right" | ""
+    bar?: 'left' | 'right' | ''
     flag?: string
-    preview?: Choice["preview"]
+    preview?: Choice['preview']
     hasAction?: boolean
   }
 } & {
@@ -346,7 +316,7 @@ export type Action = {
   visible?: boolean
   enter?: string
   onAction?: ChannelHandler
-  condition?: Shortcut["condition"]
+  condition?: Shortcut['condition']
   close?: boolean
   index?: number
 }
@@ -381,21 +351,12 @@ export interface AppState {
   action?: Action
 }
 
-export interface ChannelHandler {
-  (input?: string, state?: AppState): void | Promise<void>
-}
+export type ChannelHandler = (input?: string, state?: AppState) => void | Promise<void>
 
-export interface SubmitHandler {
-  (input?: string, state?: AppState):
-    | void
-    | Symbol
-    | Promise<void | Symbol>
-}
+export type SubmitHandler = (input?: string, state?: AppState) => undefined | symbol | Promise<undefined | symbol>
 
 export type PromptConfig = {
-  validate?: (
-    input: string
-  ) => boolean | string | Promise<boolean | string>
+  validate?: (input: string) => boolean | string | Promise<boolean | string>
   choices?: Choices<any> | Panel
   actions?: Action[] | Panel
   initialChoices?: Choices<any> | Panel
@@ -404,12 +365,7 @@ export type PromptConfig = {
   className?: string
   flags?: FlagsOptions
   actions?: Action[]
-  preview?:
-    | string
-    | ((
-        input: string,
-        state: AppState
-      ) => string | Promise<string> | void | Promise<void>)
+  preview?: string | ((input: string, state: AppState) => string | Promise<string> | void | Promise<void>)
   panel?: string | (() => string | Promise<string>)
   onNoChoices?: ChannelHandler
   onEscape?: ChannelHandler
@@ -448,9 +404,7 @@ export type PromptConfig = {
   env?: any
   shortcuts?: Shortcut[]
   show?: boolean
-} & Partial<
-  Omit<PromptData, "choices" | "id" | "script" | "preview">
->
+} & Partial<Omit<PromptData, 'choices' | 'id' | 'script' | 'preview'>>
 
 export type CronExpression =
   | `${string} ${string} ${string} ${string} ${string}`
@@ -497,20 +451,20 @@ export interface Metadata {
   /** Indicates whether to disable logs */
   log?: boolean
   /** Designates the script as a background process, running continuously in the background. */
-  background?: boolean | "auto"
+  background?: boolean | 'auto'
   /** Defines the number of seconds after which the script will be terminated */
   timeout?: number
   /** Associates the script with system events such as sleep, wake, or shutdown. */
   system?:
-    | "suspend"
-    | "resume"
-    | "on-ac"
-    | "on-battery"
-    | "shutdown"
-    | "lock-screen"
-    | "unlock-screen"
-    | "user-did-become-active"
-    | "user-did-resign-active"
+    | 'suspend'
+    | 'resume'
+    | 'on-ac'
+    | 'on-battery'
+    | 'shutdown'
+    | 'lock-screen'
+    | 'unlock-screen'
+    | 'user-did-become-active'
+    | 'user-did-resign-active'
 
   /** Specifies a cron expression for scheduling the script to run at specific times or intervals. */
   schedule?: CronExpression

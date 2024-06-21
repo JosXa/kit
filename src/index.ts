@@ -1,22 +1,16 @@
-import { homedir } from "os"
-import path from "path"
-import { URL, fileURLToPath } from "url"
+import { homedir } from 'node:os'
+import path from 'node:path'
+import { URL, fileURLToPath } from 'node:url'
 
-let kitRun = async (
-  command?: string,
-  ..._args: string[]
-) => {
-  process.env.KIT =
-    process.env.KIT ||
-    path.dirname(fileURLToPath(new URL(import.meta.url)))
+let kitRun = async (command?: string, ..._args: string[]) => {
+  process.env.KIT = process.env.KIT || path.dirname(fileURLToPath(new URL(import.meta.url)))
 
-  process.env.KNODE =
-    process.env.KNODE || path.resolve(homedir(), ".knode")
+  process.env.KNODE = process.env.KNODE || path.resolve(homedir(), '.knode')
 
-  await import("./api/global.js")
-  await import("./api/kit.js")
-  await import("./api/lib.js")
-  await import("./target/terminal.js")
+  await import('./api/global.js')
+  await import('./api/kit.js')
+  await import('./api/lib.js')
+  await import('./target/terminal.js')
 
   if (command) {
     return await global.run(command, ..._args)
@@ -27,16 +21,13 @@ if (!process?.env?.KIT_TARGET) {
   await kitRun()
 }
 
-export * from "./api/kit.js"
-export * from "./core/utils.js"
+// biome-ignore lint/performance/noBarrelFile: Library entrypoint
+export * from './api/kit.js'
+export * from './core/utils.js'
 
-let dirs = ["cli", "main"]
+let dirs = ['cli', 'main']
 
-let kitGet = (
-  _target: any,
-  key: string,
-  _receiver: any
-) => {
+let kitGet = (_target: any, key: string, _receiver: any) => {
   if ((global as any)[key] && !dirs.includes(key)) {
     return (global as any)[key]
   }
@@ -49,7 +40,7 @@ let kitGet = (
           let modulePath = `../${key}/${module}.js?${global.uuid()}`
           return await import(modulePath)
         },
-      }
+      },
     )
   } catch (error) {
     console.warn(error)

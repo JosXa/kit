@@ -1,42 +1,28 @@
-import {
-  KIT_FIRST_PATH,
-  KIT_DEFAULT_PATH,
-  getMainScriptPath,
-  isInDir,
-  cmd,
-  escapeShortcut,
-} from "../core/utils.js"
+import { KIT_DEFAULT_PATH, KIT_FIRST_PATH, cmd, escapeShortcut, getMainScriptPath, isInDir } from '../core/utils.js'
 
-import { refreshScripts } from "../core/db.js"
+import { refreshScripts } from '../core/db.js'
 
-global.applescript = async (
-  script,
-  options = { silent: true }
-) => {
-  let applescriptPath = kenvTmpPath("latest.scpt")
+global.applescript = async (script, options = { silent: true }) => {
+  let applescriptPath = kenvTmpPath('latest.scpt')
   await writeFile(applescriptPath, script)
 
   let p = new Promise<string>((res, rej) => {
-    let stdout = ``
-    let stderr = ``
-    let child = spawn(
-      `/usr/bin/osascript`,
-      [applescriptPath],
-      options
-    )
+    let stdout = ''
+    let stderr = ''
+    let child = spawn('/usr/bin/osascript', [applescriptPath], options)
 
-    child.stdout.on("data", data => {
+    child.stdout.on('data', (data) => {
       stdout += data.toString().trim()
     })
-    child.stderr.on("data", data => {
+    child.stderr.on('data', (data) => {
       stderr += data.toString().trim()
     })
 
-    child.on("exit", () => {
+    child.on('exit', () => {
       res(stdout)
     })
 
-    child.on("error", () => {
+    child.on('error', () => {
       rej(stderr)
     })
   })
@@ -44,7 +30,7 @@ global.applescript = async (
   return p
 }
 
-global.terminal = async script => {
+global.terminal = async (script) => {
   let formattedScript = script.replace(/'|"/g, '\\"')
 
   let command = `tell application "Terminal"
@@ -57,7 +43,7 @@ global.terminal = async script => {
   return await global.applescript(command)
 }
 
-global.iterm = async command => {
+global.iterm = async (command) => {
   command = `"${command.replace(/"/g, '\\"')}"`
   let script = `
     tell application "iTerm"
@@ -82,7 +68,7 @@ global.iterm = async command => {
 //TODO: refactor this work around if electron ever gets native osascript support
 // https://github.com/vercel/hyper/issues/3410
 // https://github.com/electron/electron/issues/4418
-global.hyper = async command => {
+global.hyper = async (command) => {
   command = `"${command.replace(/"/g, '\\"')}"`
   let script = `
     tell application "Hyper"
@@ -104,7 +90,7 @@ global.hyper = async command => {
   return await global.applescript(script)
 }
 
-let terminalEditor = editor => async file => {
+let terminalEditor = (editor) => async (file) => {
   //TODO: Other terminals?
   let supportedTerminalMap = {
     terminal: global.terminal,
@@ -116,20 +102,18 @@ let terminalEditor = editor => async file => {
     Object.entries(supportedTerminalMap)
       .filter(async ([name, value]) => {
         return fileSearch(name, {
-          onlyin: "/",
-          kind: "application",
+          onlyin: '/',
+          kind: 'application',
         })
       })
       .map(([name, value]) => ({ name, value: name }))
 
-  let KIT_TERMINAL = await global.env("KIT_TERMINAL", {
+  let KIT_TERMINAL = await global.env('KIT_TERMINAL', {
     placeholder: `Which Terminal do you use with ${editor}?`,
     choices: possibleTerminals(),
   })
 
-  return supportedTerminalMap[KIT_TERMINAL](
-    `${editor} ${file}`
-  )
+  return supportedTerminalMap[KIT_TERMINAL](`${editor} ${file}`)
 }
 
 let execConfig = () => {
@@ -143,18 +127,18 @@ let execConfig = () => {
 }
 
 let macEditors = [
-  "atom",
-  "code",
-  "cursor",
-  "cursor-nightly",
-  "emacs",
-  "nano",
-  "ne",
-  "nvim",
-  "sublime",
-  "webstorm",
-  "vim",
-  "zed",
+  'atom',
+  'code',
+  'cursor',
+  'cursor-nightly',
+  'emacs',
+  'nano',
+  'ne',
+  'nvim',
+  'sublime',
+  'webstorm',
+  'vim',
+  'zed',
 ]
 
 let safeReaddir = async (path: string) => {
@@ -167,7 +151,7 @@ let safeReaddir = async (path: string) => {
 
 global.selectKitEditor = async (reset = false) => {
   let globalBins = []
-  let binPaths = KIT_DEFAULT_PATH.split(":")
+  let binPaths = KIT_DEFAULT_PATH.split(':')
   for await (let binPath of binPaths) {
     let bins = await safeReaddir(binPath)
     for (let bin of bins) {
@@ -181,27 +165,23 @@ global.selectKitEditor = async (reset = false) => {
   }
 
   let possibleEditors = () => {
-    let filteredMacEditors = macEditors
-      .map(editor =>
-        globalBins.find(({ name }) => name === editor)
-      )
-      .filter(Boolean)
+    let filteredMacEditors = macEditors.map((editor) => globalBins.find(({ name }) => name === editor)).filter(Boolean)
 
     filteredMacEditors.push({
-      name: "kit",
-      description: "built-in Script Kit editor",
-      value: "kit",
+      name: 'kit',
+      description: 'built-in Script Kit editor',
+      value: 'kit',
     })
 
     return filteredMacEditors
   }
-  return await global.env("KIT_EDITOR", {
-    description: `Select a code editor for Script Kit`,
-    name: " ",
+  return await global.env('KIT_EDITOR', {
+    description: 'Select a code editor for Script Kit',
+    name: ' ',
     reset,
     resize: false,
     height: PROMPT.HEIGHT.XL,
-    placeholder: "Which code editor do you use?",
+    placeholder: 'Which code editor do you use?',
     preview: md(`
 > You can change your editor later in .env
 
@@ -235,34 +215,28 @@ If you need additional help, we're happy to answer questions:
     choices: [
       ...possibleEditors(),
       {
-        name: "None. Always copy path to clipboard",
-        value: "copy",
+        name: 'None. Always copy path to clipboard',
+        value: 'copy',
       },
     ],
   })
 }
 
-let execAndLogCommand = async (
-  command: string,
-  config: Parameters<typeof exec>[1]
-) => {
+let execAndLogCommand = async (command: string, config: Parameters<typeof exec>[1]) => {
   global.log(`${process.pid}: > ${command}`)
   return exec(command, config)
 }
 let atom = async (file: string, dir: string) => {
-  let command = `${global.env.KIT_EDITOR} '${file}' ${
-    dir ? ` '${dir}'` : ``
-  }`
+  let command = `${global.env.KIT_EDITOR} '${file}' ${dir ? ` '${dir}'` : ''}`
   await execAndLogCommand(command, execConfig())
 }
 
 let code = async (file, dir, line = 0, col = 0) => {
-  let codeArgs = ["--goto", `'${file}:${line}:${col}'`]
-  if (dir)
-    codeArgs = [...codeArgs, "--folder-uri", `'${dir}'`]
-  let command = `${global.env.KIT_EDITOR} ${codeArgs.join(
-    " "
-  )}`
+  let codeArgs = ['--goto', `'${file}:${line}:${col}'`]
+  if (dir) {
+    codeArgs = [...codeArgs, '--folder-uri', `'${dir}'`]
+  }
+  let command = `${global.env.KIT_EDITOR} ${codeArgs.join(' ')}`
 
   let config = execConfig()
 
@@ -277,13 +251,13 @@ let webstorm = async (file, dir, line = 0) => {
   await execAndLogCommand(command, config)
 }
 
-let vim = terminalEditor("vim")
-let nvim = terminalEditor("nvim")
-let nano = terminalEditor("nano")
+let vim = terminalEditor('vim')
+let nvim = terminalEditor('nvim')
+let nano = terminalEditor('nano')
 let fullySupportedEditors = {
   code,
   cursor: code,
-  ["cursor-nightly"]: code,
+  'cursor-nightly': code,
   zed: atom,
   vim,
   nvim,
@@ -294,26 +268,29 @@ let fullySupportedEditors = {
 
 global.edit = async (f, dir, line = 0, col = 0) => {
   // console.log(`📝 Edit ${f}`)
-  let file = path.resolve(
-    f?.startsWith("~") ? f.replace(/^~/, home()) : f
-  )
-  if (global.flag?.edit === false) return
+  let file = path.resolve(f?.startsWith('~') ? f.replace(/^~/, home()) : f)
+  if (global.flag?.edit === false) {
+    return
+  }
 
   let KIT_EDITOR = await global.selectKitEditor(false)
 
-  if (KIT_EDITOR === "kit") {
-    let language = global.extname(file).replace(/^\./, "")
-    let contents = (await readFile(file, "utf8")) || ""
+  if (KIT_EDITOR === 'kit') {
+    let language = global.extname(file).replace(/^\./, '')
+    let contents = (await readFile(file, 'utf8')) || ''
     let extraLibs = await global.getExtraLibs()
 
     let openMain = false
     let onEscape = async (input, state) => {
-      openMain =
-        state?.history[0]?.filePath === getMainScriptPath()
-      if (input) submit(input)
+      openMain = state?.history[0]?.filePath === getMainScriptPath()
+      if (input) {
+        submit(input)
+      }
     }
     let onAbandon = async (input, state) => {
-      if (input) submit(input)
+      if (input) {
+        submit(input)
+      }
     }
 
     contents = await editor({
@@ -324,18 +301,18 @@ global.edit = async (f, dir, line = 0, col = 0) => {
       onAbandon,
       shortcuts: [
         {
-          name: "Close",
+          name: 'Close',
           key: `${cmd}+w`,
           onPress: async (input, state) => {
             exit()
           },
-          bar: "right",
+          bar: 'right',
         },
         {
-          name: "Save and Close",
-          key: "escape",
+          name: 'Save and Close',
+          key: 'escape',
           onPress: onEscape,
-          bar: "right",
+          bar: 'right',
         },
       ],
     })
@@ -352,25 +329,16 @@ global.edit = async (f, dir, line = 0, col = 0) => {
     let execEditor = async (file: string) => {
       let editCommand = `"${KIT_EDITOR}" "${file}"`
       let config = execConfig()
-      let { exitCode, stdout, stderr } =
-        await execAndLogCommand(editCommand, config)
+      let { exitCode, stdout, stderr } = await execAndLogCommand(editCommand, config)
 
-      global.log(
-        `${
-          process.pid
-        }: Edit command exited with ${exitCode}. ${
-          exitCode === 0 ? "✅" : "❌"
-        }`
-      )
+      global.log(`${process.pid}: Edit command exited with ${exitCode}. ${exitCode === 0 ? '✅' : '❌'}`)
 
       if (exitCode !== 0) {
         global.log(`Stdout: ${stdout}`)
         global.log(`Stderr: ${stderr}`)
       }
     }
-    let editorFn =
-      fullySupportedEditors[path.basename(KIT_EDITOR)] ||
-      execEditor
+    let editorFn = fullySupportedEditors[path.basename(KIT_EDITOR)] || execEditor
 
     try {
       await editorFn(file, dir, line, col)
@@ -379,9 +347,7 @@ global.edit = async (f, dir, line = 0, col = 0) => {
 }
 
 global.openLog = () => {
-  let logPath = global.kitScript
-    .replace("scripts", "logs")
-    .replace(new RegExp(`\${kitMode()}$`), "log")
+  let logPath = global.kitScript.replace('scripts', 'logs').replace(/\${kitMode()}$/, 'log')
 
   console.log(`📂 Open log ${logPath}`)
 

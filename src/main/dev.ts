@@ -3,4 +3,4 @@
 // Trigger: =
 
 await dev()
-export {}
+export type {}

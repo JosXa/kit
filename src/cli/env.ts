@@ -1,3 +1,3 @@
-await edit(kenvPath(".env"), env.KENV)
+await edit(kenvPath('.env'), env.KENV)
 
-export {}
+export type {}

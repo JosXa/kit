@@ -3,11 +3,7 @@
 // Cache: true
 // Trigger: /
 
-import {
-  escapeShortcut,
-  isMac,
-  isWin,
-} from "../core/utils.js"
+import { escapeShortcut, isMac, isWin } from '../core/utils.js'
 
 let actionFlags: {
   name: string
@@ -16,38 +12,32 @@ let actionFlags: {
   action?: (selectedFile: string) => Promise<void>
 }[] = [
   {
-    name: "Open in Default App",
-    value: "open",
-    action: async selectedFile => {
+    name: 'Open in Default App',
+    value: 'open',
+    action: async (selectedFile) => {
       await open(selectedFile)
     },
   },
   {
-    name: "Open with...",
-    description:
-      "Select from a list of apps to open the file with",
-    value: "open-with",
-    action: async selectedFile => {
-      await run(
-        kitPath("main", "open-with.js"),
-        selectedFile
-      )
+    name: 'Open with...',
+    description: 'Select from a list of apps to open the file with',
+    value: 'open-with',
+    action: async (selectedFile) => {
+      await run(kitPath('main', 'open-with.js'), selectedFile)
     },
   },
   {
-    name: `Show in ${isMac ? "Finder" : "Explorer"}`,
-    description: `Reveal the file in ${
-      isMac ? "Finder" : "Explorer"
-    }`,
-    value: "finder",
-    action: async selectedFile => {
+    name: `Show in ${isMac ? 'Finder' : 'Explorer'}`,
+    description: `Reveal the file in ${isMac ? 'Finder' : 'Explorer'}`,
+    value: 'finder',
+    action: async (selectedFile) => {
       await revealFile(selectedFile)
     },
   },
   {
-    name: "Show Info",
-    value: "info",
-    action: async selectedFile => {
+    name: 'Show Info',
+    value: 'info',
+    action: async (selectedFile) => {
       await applescript(`
   set aFile to (POSIX file "${selectedFile}") as alias
   tell application "Finder" to open information window of aFile
@@ -55,20 +45,20 @@ let actionFlags: {
     },
   },
   {
-    name: "Open Path in Kit Term",
-    value: "kit-term",
-    action: async selectedFile => {
+    name: 'Open Path in Kit Term',
+    value: 'kit-term',
+    action: async (selectedFile) => {
       await term({
         command: `cd ${selectedFile}`,
         description: selectedFile,
-        name: "Kit Term",
+        name: 'Kit Term',
       })
     },
   },
   {
-    name: "Open in Terminal",
-    value: "terminal",
-    action: async selectedFile => {
+    name: 'Open in Terminal',
+    value: 'terminal',
+    action: async (selectedFile) => {
       if (isWin) {
         await exec(`start cmd /k "cd ${selectedFile}"`)
       } else {
@@ -77,20 +67,20 @@ let actionFlags: {
     },
   },
   {
-    name: "Run Command",
-    value: "command",
-    action: async selectedFile => {
+    name: 'Run Command',
+    value: 'command',
+    action: async (selectedFile) => {
       cd(selectedFile)
-      setDescription(`> Run command:`)
-      await exec(await arg("Enter command:"))
+      setDescription('> Run command:')
+      await exec(await arg('Enter command:'))
     },
   },
   {
-    name: "Open in Kit Editor",
-    value: "editor",
-    action: async selectedFile => {
+    name: 'Open in Kit Editor',
+    value: 'editor',
+    action: async (selectedFile) => {
       try {
-        let content = await readFile(selectedFile, "utf-8")
+        let content = await readFile(selectedFile, 'utf-8')
         content = await editor(content)
         await writeFile(selectedFile, content)
       } catch (error) {
@@ -99,14 +89,12 @@ let actionFlags: {
     },
   },
   {
-    name: "Open in VS Code",
-    value: "vscode",
-    action: async selectedFile => {
+    name: 'Open in VS Code',
+    value: 'vscode',
+    action: async (selectedFile) => {
       hide()
       if (isMac) {
-        await exec(
-          `open -a 'Visual Studio Code' '${selectedFile}'`
-        )
+        await exec(`open -a 'Visual Studio Code' '${selectedFile}'`)
       } else {
         await exec(`code ${selectedFile}`)
       }
@@ -116,68 +104,56 @@ let actionFlags: {
     ? [
         {
           name: `Open with ${process.env.KIT_OPEN_IN}`,
-          value: "open_in_custom",
-          action: async selectedFile => {
+          value: 'open_in_custom',
+          action: async (selectedFile) => {
             if (isMac) {
               let command = `${process.env.KIT_OPEN_IN} '${selectedFile}'`
               await exec(command)
             } else {
-              await exec(
-                `"${process.env.KIT_OPEN_IN}" ${selectedFile}`
-              )
+              await exec(`"${process.env.KIT_OPEN_IN}" ${selectedFile}`)
             }
           },
         },
       ]
     : []),
   {
-    name: "Copy to...",
-    value: "copy_to",
-    action: async selectedFile => {
+    name: 'Copy to...',
+    value: 'copy_to',
+    action: async (selectedFile) => {
       let destination = await path({
-        hint: "Select destination",
+        hint: 'Select destination',
         startPath: home(),
         onlyDirs: true,
         shortcuts: [escapeShortcut],
       })
-      await copyFile(
-        selectedFile,
-        path.resolve(
-          destination,
-          path.basename(selectedFile)
-        )
-      )
+      await copyFile(selectedFile, path.resolve(destination, path.basename(selectedFile)))
     },
   },
   {
-    name: "Move",
-    value: "move",
-    action: async selectedFile => {
-      setDescription("Select destination folder")
-      let destFolder = await path(
-        path.dirname(selectedFile)
-      )
+    name: 'Move',
+    value: 'move',
+    action: async (selectedFile) => {
+      setDescription('Select destination folder')
+      let destFolder = await path(path.dirname(selectedFile))
       mv(selectedFile, destFolder)
     },
   },
   {
-    name: "Copy Path",
-    value: "copy",
-    action: async selectedFile => {
+    name: 'Copy Path',
+    value: 'copy',
+    action: async (selectedFile) => {
       await copy(selectedFile)
     },
   },
   {
-    name: "Trash",
-    value: "trash",
-    action: async selectedFile => {
+    name: 'Trash',
+    value: 'trash',
+    action: async (selectedFile) => {
       let yn = await arg({
-        placeholder: `Trash ${path.basename(
-          selectedFile
-        )}?`,
-        hint: "[y]/[n]",
+        placeholder: `Trash ${path.basename(selectedFile)}?`,
+        hint: '[y]/[n]',
       })
-      if (yn === "y") {
+      if (yn === 'y') {
         await trash(selectedFile)
       }
     },
@@ -190,38 +166,40 @@ for (let flag of actionFlags) {
 }
 
 let initialPath = args?.shift() || home()
-if (initialPath === "~") initialPath = home()
+if (initialPath === '~') {
+  initialPath = home()
+}
 let selectedPath = await path({
   flags,
   startPath: initialPath,
   resize: true,
-  enter: "Actions",
+  enter: 'Actions',
   onMenuToggle: async (input, state) => {
     if (state.flag) {
-      setPlaceholder("Select Action")
-      setEnter("Submit")
+      setPlaceholder('Select Action')
+      setEnter('Submit')
     } else {
-      setPlaceholder("Browse")
-      setEnter("Actions")
+      setPlaceholder('Browse')
+      setEnter('Actions')
     }
   },
   onSubmit: async (input, state) => {
     if (state?.focused?.miss) {
       let selectedPath = input
       let doesPathExist = await pathExists(selectedPath)
-      let type = "file"
+      let type = 'file'
       if (!doesPathExist) {
-        if (state?.focused?.value === "create-file") {
+        if (state?.focused?.value === 'create-file') {
           await ensureFile(selectedPath)
         }
-        if (state?.focused?.value === "create-folder") {
-          type = "folder"
+        if (state?.focused?.value === 'create-folder') {
+          type = 'folder'
           await ensureDir(selectedPath)
         }
       }
 
       let pathChoice = {
-        img: kitPath("icons", type + ".svg"),
+        img: kitPath('icons', type + '.svg'),
         name: path.parse(selectedPath).base,
         value: selectedPath,
       }
@@ -231,13 +209,11 @@ let selectedPath = await path({
 
       return preventSubmit
     }
-    if (!Boolean(state?.flag)) {
+    if (!state?.flag) {
       await setFlagValue(state?.focused)
       return preventSubmit
     }
   },
 })
 
-await actionFlags
-  .find(f => flag?.[f.name])
-  ?.action?.(selectedPath)
+await actionFlags.find((f) => flag?.[f.name])?.action?.(selectedPath)

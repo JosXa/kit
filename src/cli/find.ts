@@ -10,24 +10,19 @@ Search and select scripts by contents
 // Shortcut: cmd+f
 // Pass: true
 
-import "@johnlindquist/kit"
-import {
-  escapeShortcut,
-  cmd,
-  getKenvs,
-  keywordInputTransformer,
-} from "../core/utils.js"
-import { highlightJavaScript } from "../api/kit.js"
+import '@johnlindquist/kit'
+import { highlightJavaScript } from '../api/kit.js'
+import { cmd, escapeShortcut, getKenvs, keywordInputTransformer } from '../core/utils.js'
 let kenvs = await getKenvs()
 let allKenvs = [kenvPath(), ...kenvs]
 let searchDirs = [
-  ...allKenvs.map(k => path.resolve(k, "scripts")),
+  ...allKenvs.map((k) => path.resolve(k, 'scripts')),
   //   ...allKenvs.map(k => path.resolve(k, "logs")),
 ]
 let searchExistingDirs = []
 for await (let dir of searchDirs) {
   if (await isDir(dir)) {
-    searchExistingDirs.push(dir + path.sep + "*")
+    searchExistingDirs.push(dir + path.sep + '*')
   }
 }
 
@@ -35,7 +30,7 @@ let pleaseType = [
   {
     info: true,
     miss: true,
-    name: "Please type more than 2 characters",
+    name: 'Please type more than 2 characters',
   },
 ]
 
@@ -43,34 +38,31 @@ let inputTransformer = keywordInputTransformer(arg?.keyword)
 
 let filePath = await arg(
   {
-    input: (flag?.pass as string) || "",
+    input: (flag?.pass as string) || '',
     ...(!arg?.pass && { initialChoices: pleaseType }),
-    placeholder: "Search Scripts",
+    placeholder: 'Search Scripts',
     debounceInput: 400,
-    enter: "Run",
+    enter: 'Run',
     preventCollapse: true,
 
     onEscape: async () => {
-      submit(``)
+      submit('')
       await mainScript()
     },
     shortcuts: [
       escapeShortcut,
       {
-        name: `Edit`,
+        name: 'Edit',
         visible: true,
         key: `${cmd}+o`,
         onPress: async (input, { focused }) => {
-          await run(
-            kitPath("cli", "edit-script.js"),
-            focused.value
-          )
+          await run(kitPath('cli', 'edit-script.js'), focused.value)
         },
-        bar: "right",
+        bar: 'right',
       },
     ],
   },
-  async input => {
+  async (input) => {
     input = inputTransformer(input)
     try {
       if (!input || input?.length < 3) {
@@ -79,20 +71,20 @@ let filePath = await arg(
       }
 
       let filePaths = searchExistingDirs
-        .flatMap(dir => {
+        .flatMap((dir) => {
           try {
-            let { stdout } = grep("-il", input, dir)
-            return stdout.split("\n")
+            let { stdout } = grep('-il', input, dir)
+            return stdout.split('\n')
           } catch (error) {
             return []
           }
         })
         .filter(Boolean)
 
-      let results = filePaths.map(filePath => {
+      let results = filePaths.map((filePath) => {
         return {
           name: path.basename(filePath),
-          description: filePath.replace(home(), "~"),
+          description: filePath.replace(home(), '~'),
           value: filePath,
           preview: async () => {
             return highlightJavaScript(filePath)
@@ -107,17 +99,18 @@ let filePath = await arg(
             name: `No Results for ${input}`,
           },
         ]
-      } else {
-        return results
       }
+      return results
     } catch (error) {
       setChoices([])
       setPanel(
         md(`## No Results
       
-<code>grep for ${input}</code> failed`)
+<code>grep for ${input}</code> failed`),
       )
     }
-  }
+  },
 )
-if (filePath) await run(filePath)
+if (filePath) {
+  await run(filePath)
+}

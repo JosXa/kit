@@ -1,4 +1,4 @@
-exec(`caffeinate -u`)
+exec('caffeinate -u')
 hide()
 
-export {}
+export type {}

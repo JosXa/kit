@@ -1,3 +1,3 @@
-await cli("set-env-var", "KIT_ACCESSIBILITY", "true")
+await cli('set-env-var', 'KIT_ACCESSIBILITY', 'true')
 
-export {}
+export type {}

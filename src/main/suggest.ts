@@ -2,29 +2,30 @@
 // Description: Start typing to see Google Suggest results
 // Pass: true
 
-import "@johnlindquist/kit"
-import { escapeShortcut } from "../core/utils.js"
+import '@johnlindquist/kit'
+import { escapeShortcut } from '../core/utils.js'
 
-let { default: suggest } = await import("suggestion")
+let { default: suggest } = await import('suggestion')
 
 let input = await arg(
   {
-    name: "Google Suggest",
-    input: (arg?.pass as string) || "",
-    placeholder: "Google suggest:",
-    enter: `Paste`,
+    name: 'Google Suggest',
+    input: (arg?.pass as string) || '',
+    placeholder: 'Google suggest:',
+    enter: 'Paste',
     // shortcuts: [escapeShortcut],
     resize: true,
   },
-  async input => {
-    if (input?.length < 3)
+  async (input) => {
+    if (input?.length < 3) {
       return [
         {
-          name: `Type at least 4 characters`,
+          name: 'Type at least 4 characters',
           skip: true,
           info: true,
         },
       ]
+    }
 
     return await new Promise((res, rej) => {
       suggest(input, (err, suggestions) => {
@@ -35,9 +36,8 @@ let input = await arg(
         }
       })
     })
-  }
+  },
 )
 
 // await run(kitPath("main", "google.js"), `--input`, input)
 setSelectedText(input)
-export {}

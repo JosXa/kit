@@ -1,3 +1,3 @@
-browse(`https://twitter.com/johnlindquist`)
+browse('https://twitter.com/johnlindquist')
 
-export {}
+export type {}

@@ -1,6 +1,6 @@
 // Template: true
 
-import "@johnlindquist/kit"
+import '@johnlindquist/kit'
 
 let template = `
 {{template}}

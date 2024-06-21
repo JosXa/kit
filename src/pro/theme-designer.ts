@@ -1,48 +1,43 @@
-import "@johnlindquist/kit"
-import slugify from "slugify"
-import { globby } from "globby"
-import { getGroupedScripts } from "../api/kit.js"
+import '@johnlindquist/kit'
+import { globby } from 'globby'
+import slugify from 'slugify'
+import { getGroupedScripts } from '../api/kit.js'
 
 // Name: Widget Theme Picker
 // Description: Color Picker HTML
 
-await ensureDir(kenvPath("themes"))
-let themePaths = await globby([
-  kenvPath("themes", "*.json").replaceAll("\\", "/"),
-])
+await ensureDir(kenvPath('themes'))
+let themePaths = await globby([kenvPath('themes', '*.json').replaceAll('\\', '/')])
 
-let themeName = ""
-let themePath = ""
+let themeName = ''
+let themePath = ''
 let theme = {
-  name: "Custom Theme",
-  foreground: "#ffffff",
-  accent: "#fbbf24",
-  ui: "#343434",
-  background: "#000000",
-  opacity: "0.85",
+  name: 'Custom Theme',
+  foreground: '#ffffff',
+  accent: '#fbbf24',
+  ui: '#343434',
+  background: '#000000',
+  opacity: '0.85',
 }
 if (themePaths.length) {
-  themePath = await arg(
-    "Select existing or create new theme",
-    themePaths.concat(["New Theme"])
-  )
-  if (themePath === "New Theme") {
-    themePath = ""
+  themePath = await arg('Select existing or create new theme', themePaths.concat(['New Theme']))
+  if (themePath === 'New Theme') {
+    themePath = ''
     themeName = await arg({
-      placeholder: "Name new theme",
-      hint: "The name will be slugified and used as the filename",
-      enter: "Create Theme",
+      placeholder: 'Name new theme',
+      hint: 'The name will be slugified and used as the filename',
+      enter: 'Create Theme',
     })
     theme.name = themeName
   } else {
     theme = await readJson(themePath)
-    themeName = theme?.name || "Custom Theme"
+    themeName = theme?.name || 'Custom Theme'
   }
 } else {
   themeName = await arg({
-    placeholder: "Name new theme",
-    hint: "The name will be slugified and used as the filename",
-    enter: "Create Theme",
+    placeholder: 'Name new theme',
+    hint: 'The name will be slugified and used as the filename',
+    enter: 'Create Theme',
   })
 }
 
@@ -51,7 +46,7 @@ let themeSlug = slugify(themeName, {
   trim: true,
 })
 
-themePath ||= kenvPath("themes", `${themeSlug}.json`)
+themePath ||= kenvPath('themes', `${themeSlug}.json`)
 log({ themeSlug, themePath })
 let themeExists = await isFile(themePath)
 if (!themeExists) {
@@ -60,8 +55,7 @@ if (!themeExists) {
   })
 }
 
-const { foreground, accent, ui, background, opacity } =
-  theme
+const { foreground, accent, ui, background, opacity } = theme
 
 let w = await widget(
   `
@@ -86,11 +80,11 @@ let w = await widget(
     width: 300,
     height: 300,
     draggable: false,
-  }
+  },
 )
 
 w.onInput(
-  debounce(event => {
+  debounce((event) => {
     theme[event.dataset.label] = event.value
     setTheme({
       [event.dataset.label]: event.value,
@@ -99,21 +93,18 @@ w.onInput(
     writeJson(themePath, theme, {
       spaces: 2,
     })
-  }, 250)
+  }, 250),
 )
 
-w.onClick(async event => {
-  if (event.dataset.name === "save") {
-    let appearance = await arg(
-      `Use ${themeName} for which system appearance?`,
-      ["Light", "Dark", "Both"]
-    )
-    if (appearance === "Light" || appearance === "Both") {
-      await cli("set-env-var", "KIT_THEME_LIGHT", themePath)
+w.onClick(async (event) => {
+  if (event.dataset.name === 'save') {
+    let appearance = await arg(`Use ${themeName} for which system appearance?`, ['Light', 'Dark', 'Both'])
+    if (appearance === 'Light' || appearance === 'Both') {
+      await cli('set-env-var', 'KIT_THEME_LIGHT', themePath)
     }
 
-    if (appearance === "Dark" || appearance === "Both") {
-      await cli("set-env-var", "KIT_THEME_DARK", themePath)
+    if (appearance === 'Dark' || appearance === 'Both') {
+      await cli('set-env-var', 'KIT_THEME_DARK', themePath)
     }
 
     w.close()
@@ -128,9 +119,9 @@ setTimeout(() => {
 }, 500)
 await arg(
   {
-    placeholder: `Sample Prompt for Theme Design`,
+    placeholder: 'Sample Prompt for Theme Design',
     hint: `Click "save" in the widget to continue`,
     alwaysOnTop: true,
   },
-  scripts
+  scripts,
 )

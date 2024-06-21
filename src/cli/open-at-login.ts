@@ -1,30 +1,20 @@
 // Description: Toggle Open at Login
 
-import { getEnvVar, setEnvVar } from "../api/kit.js"
+import { getEnvVar, setEnvVar } from '../api/kit.js'
 
-let openAtLogin = await getEnvVar(
-  "KIT_OPEN_AT_LOGIN",
-  "true"
-)
+let openAtLogin = await getEnvVar('KIT_OPEN_AT_LOGIN', 'true')
 
-let placeholder = `"Open at login" is ${
-  openAtLogin ? "en" : "dis"
-}abled`
+let placeholder = `"Open at login" is ${openAtLogin ? 'en' : 'dis'}abled`
 
 let toggle = await arg(placeholder, [
   {
-    name: "Enable",
+    name: 'Enable',
     value: true,
   },
   {
-    name: "Disable",
+    name: 'Disable',
     value: false,
   },
 ])
 
-await setEnvVar(
-  "KIT_OPEN_AT_LOGIN",
-  toggle ? "true" : "false"
-)
-
-export {}
+await setEnvVar('KIT_OPEN_AT_LOGIN', toggle ? 'true' : 'false')

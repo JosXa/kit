@@ -1,20 +1,20 @@
 /** @type {import("/Users/johnlindquist/.kit")} */
-await import("../test-sdk/config.js")
+await import('../test-sdk/config.js')
 console.log({ kenvTestPath })
 
-let escapePathPeriods = p => p.replace(/\./g, "\\.")
+let escapePathPeriods = (p) => p.replace(/\./g, '\\.')
 
 let userKenv = (...parts) => {
-  return home(".kenv", ...parts.filter(Boolean))
+  return home('.kenv', ...parts.filter(Boolean))
 }
-let userBinPath = userKenv("bin")
+let userBinPath = userKenv('bin')
 if (await isDir(userBinPath)) {
-  let staleMocks = userKenv("bin", "mock*")
+  let staleMocks = userKenv('bin', 'mock*')
   console.log(`Removing stale mocks: ${staleMocks}`)
   await rm(escapePathPeriods(staleMocks))
 }
 
-if (await isDir("-d", kitMockPath())) {
+if (await isDir('-d', kitMockPath())) {
   await rm(escapePathPeriods(kitMockPath()))
 }
 
@@ -22,10 +22,11 @@ if (await isDir(kenvTestPath)) {
   console.log(`Clearing ${kenvTestPath}`)
   await rm(escapePathPeriods(kenvTestPath))
 }
-let { stdout: branch, stderr } =
-  await $`git branch --show-current`
+let { stdout: branch, stderr } = await $`git branch --show-current`
 
-if (stderr || !branch.match(/main|beta|alpha|next/)) exit(1)
+if (stderr || !branch.match(/main|beta|alpha|next/)) {
+  exit(1)
+}
 
 branch = branch.trim()
 let repo = `johnlindquist/kenv#${branch}`
@@ -43,11 +44,11 @@ await degit(repo, {
 }).clone(kenvSetupPath)
 
 process.env.KENV = kenvTestPath
-await rm(escapePathPeriods(kitPath("db", "scripts.json")))
-await $`kit ${kitPath("setup", "setup.js")} --no-edit`
+await rm(escapePathPeriods(kitPath('db', 'scripts.json')))
+await $`kit ${kitPath('setup', 'setup.js')} --no-edit`
 // console.log(
 //   await readFile(kenvPath("package.json"), "utf-8")
 // )
-await $`kit ${kitPath("cli", "refresh-scripts-db.js")}`
+await $`kit ${kitPath('cli', 'refresh-scripts-db.js')}`
 
 export {}

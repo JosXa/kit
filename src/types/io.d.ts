@@ -1,4 +1,4 @@
-import { EventEmitter } from "events"
+import { EventEmitter } from 'node:events'
 export declare enum EventType {
   EVENT_KEY_PRESSED = 4,
   EVENT_KEY_RELEASED = 5,
@@ -9,9 +9,7 @@ export declare enum EventType {
   EVENT_MOUSE_WHEEL = 11,
 }
 export interface UiohookKeyboardEvent {
-  type:
-    | EventType.EVENT_KEY_PRESSED
-    | EventType.EVENT_KEY_RELEASED
+  type: EventType.EVENT_KEY_PRESSED | EventType.EVENT_KEY_RELEASED
   time: number
   altKey: boolean
   ctrlKey: boolean
@@ -181,50 +179,20 @@ export declare const UiohookKey: {
   readonly PrintScreen: 3639
 }
 declare interface UiohookNapi {
-  on(
-    event: "input",
-    listener: (
-      e:
-        | UiohookKeyboardEvent
-        | UiohookMouseEvent
-        | UiohookWheelEvent
-    ) => void
-  ): this
-  on(
-    event: "keydown",
-    listener: (e: UiohookKeyboardEvent) => void
-  ): this
-  on(
-    event: "keyup",
-    listener: (e: UiohookKeyboardEvent) => void
-  ): this
-  on(
-    event: "mousedown",
-    listener: (e: UiohookMouseEvent) => void
-  ): this
-  on(
-    event: "mouseup",
-    listener: (e: UiohookMouseEvent) => void
-  ): this
-  on(
-    event: "mousemove",
-    listener: (e: UiohookMouseEvent) => void
-  ): this
-  on(
-    event: "click",
-    listener: (e: UiohookMouseEvent) => void
-  ): this
-  on(
-    event: "wheel",
-    listener: (e: UiohookWheelEvent) => void
-  ): this
+  on(event: 'input', listener: (e: UiohookKeyboardEvent | UiohookMouseEvent | UiohookWheelEvent) => void): this
+  on(event: 'keydown', listener: (e: UiohookKeyboardEvent) => void): this
+  on(event: 'keyup', listener: (e: UiohookKeyboardEvent) => void): this
+  on(event: 'mousedown', listener: (e: UiohookMouseEvent) => void): this
+  on(event: 'mouseup', listener: (e: UiohookMouseEvent) => void): this
+  on(event: 'mousemove', listener: (e: UiohookMouseEvent) => void): this
+  on(event: 'click', listener: (e: UiohookMouseEvent) => void): this
+  on(event: 'wheel', listener: (e: UiohookWheelEvent) => void): this
 }
 declare class UiohookNapi extends EventEmitter {
   private handler
   start(): void
   stop(): void
   keyTap(key: number, modifiers?: number[]): void
-  keyToggle(key: number, toggle: "down" | "up"): void
+  keyToggle(key: number, toggle: 'down' | 'up'): void
 }
 export declare const uIOhook: UiohookNapi
-export {}

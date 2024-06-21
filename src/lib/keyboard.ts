@@ -6,45 +6,37 @@ await keystroke("command option e")
 ```
 */
 
-import { Channel } from "../core/enum.js"
+import { Channel } from '../core/enum.js'
 
 global.keystroke = async (keyString: string) => {
   await hide()
   let keyCodes = {
-    left: "123",
-    right: "124",
-    down: "125",
-    up: "126",
+    left: '123',
+    right: '124',
+    down: '125',
+    up: '126',
   }
 
-  let keys = keyString.split(" ")
+  let keys = keyString.split(' ')
 
   let key = keys.pop().toLowerCase()
   let modifiers = keys
-    .map(modifier => `${modifier} down,`)
-    .join(" ")
+    .map((modifier) => `${modifier} down,`)
+    .join(' ')
     .slice(0, -1)
 
-  let strokeOrCode = keyCodes[key]
-    ? `key code ${keyCodes[key]}`
-    : `keystroke "${key}"`
+  let strokeOrCode = keyCodes[key] ? `key code ${keyCodes[key]}` : `keystroke "${key}"`
 
   return await applescript(
     String.raw`
     tell application "System Events"
-       ${strokeOrCode} ${
-      modifiers.length ? `using {${modifiers}}` : ``
-    }
+       ${strokeOrCode} ${modifiers.length ? `using {${modifiers}}` : ''}
     end tell
-    `
+    `,
   )
 }
 
-global.pressKeyboardShortcut = async (
-  application = "",
-  key = "",
-  commands = []
-) => {
+global.pressKeyboardShortcut = async (application = '', key = '', commands = []) => {
   // We want them as an array for formatCommands so we split on ","
   const formattedCommands = formatCommands(commands)
   // Note: we have to activate an application first in order to use this script with it
@@ -55,7 +47,7 @@ global.pressKeyboardShortcut = async (
     tell application "System Events"
       keystroke "${key}" using {${formattedCommands}}
     end tell
-    `
+    `,
   )
 }
 
@@ -64,7 +56,7 @@ function formatCommands(commands = []) {
   // into this "control down, command down,"
   // and then slice the last commma
   return commands
-    .map(command => `${command} down,`)
-    .join(" ")
+    .map((command) => `${command} down,`)
+    .join(' ')
     .slice(0, -1)
 }

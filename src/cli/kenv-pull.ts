@@ -1,23 +1,23 @@
 // Description: Git Pull Kenv Repo
 
-import { getKenvs } from "../core/utils.js"
+import { getKenvs } from '../core/utils.js'
 
-let kenvs = (await getKenvs()).map(value => ({
+let kenvs = (await getKenvs()).map((value) => ({
   name: path.basename(value),
   value,
 }))
 
 kenvs.unshift({
-  name: "main",
+  name: 'main',
   value: kenvPath(),
 })
 
-let dir = await arg("Pull which kenv", kenvs)
+let dir = await arg('Pull which kenv', kenvs)
 
 cd(dir)
 
 await term({
-  command: `git fetch`,
+  command: 'git fetch',
   preview: md(`# Pulling a Kenv
 
 > The terminal only ran "git fetch" to show you what changes are available.
@@ -28,27 +28,27 @@ You still need to run "git merge" to apply the changes.
   cwd: dir,
   shortcuts: [
     {
-      name: "Stash",
+      name: 'Stash',
       key: `${cmd}+s`,
-      bar: "right",
+      bar: 'right',
       onPress: async () => {
-        term.write(`git stash`)
+        term.write('git stash')
       },
     },
     {
-      name: "Merge",
+      name: 'Merge',
       key: `${cmd}+m`,
-      bar: "right",
+      bar: 'right',
       onPress: async () => {
-        term.write(`git merge`)
+        term.write('git merge')
       },
     },
     {
-      name: "Exit",
+      name: 'Exit',
       key: `${cmd}+w`,
-      bar: "right",
+      bar: 'right',
       onPress: async () => {
-        submit("")
+        submit('')
       },
     },
   ],
@@ -57,5 +57,3 @@ You still need to run "git merge" to apply the changes.
 await getScripts(false)
 
 await mainScript()
-
-export {}

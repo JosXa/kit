@@ -1,16 +1,12 @@
 // Description: Download latest docs
 
 try {
-  await download(
-    `https://www.scriptkit.com/api/docs`,
-    kitPath("data"),
-    {
-      rejectUnauthorized: false,
-    }
-  )
+  await download('https://www.scriptkit.com/api/docs', kitPath('data'), {
+    rejectUnauthorized: false,
+  })
 
-  global.log(`📝 Docs updated`)
+  global.log('📝 Docs updated')
 } catch {
-  global.warn(`Docs failed to download`)
+  global.warn('Docs failed to download')
 }
-export {}
+export type {}

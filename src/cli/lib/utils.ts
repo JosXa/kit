@@ -1,37 +1,24 @@
-import path from "path"
-import shelljs from "shelljs"
-import {
-  kitPath,
-  knodePath,
-  home,
-} from "../../core/utils.js"
-import { compile } from "@johnlindquist/globals"
-import {
-  ensureDir,
-  readFile,
-  writeFile,
-} from "@johnlindquist/kit-internal/fs-extra"
+import path from 'node:path'
+import { compile } from '@johnlindquist/globals'
+import { ensureDir, readFile, writeFile } from '@johnlindquist/kit-internal/fs-extra'
+import shelljs from 'shelljs'
+import { home, kitPath, knodePath } from '../../core/utils.js'
 
-import { Bin } from "../../core/enum"
-import { Choice, Script } from "../../types/core"
+import type { Bin } from '../../core/enum'
+import type { Choice, Script } from '../../types/core'
 
-export let jsh = process.env?.SHELL?.includes("jsh")
+export let jsh = process.env?.SHELL?.includes('jsh')
 
 export let ensureTemplates = async () => {
-  let templatesPath = (...parts: string[]): string =>
-    kenvPath("templates", ...parts)
-  let kitTemplatesPath = (...parts: string[]): string =>
-    kitPath("templates", "scripts", ...parts)
+  let templatesPath = (...parts: string[]): string => kenvPath('templates', ...parts)
+  let kitTemplatesPath = (...parts: string[]): string => kitPath('templates', 'scripts', ...parts)
 
   await ensureDir(templatesPath())
 
   let ensureTemplate = async (templateName: string) => {
     let templatePath = templatesPath(templateName)
     if (!(await pathExists(templatePath))) {
-      await copyFile(
-        kitTemplatesPath(templateName),
-        templatePath
-      )
+      await copyFile(kitTemplatesPath(templateName), templatePath)
     }
   }
 
@@ -41,45 +28,33 @@ export let ensureTemplates = async () => {
   }
 }
 
-export let createBinFromScript = async (
-  type: Bin,
-  { command, filePath }: Script
-) => {
-  let template = jsh ? "stackblitz" : "terminal"
+export let createBinFromScript = async (type: Bin, { command, filePath }: Script) => {
+  let template = jsh ? 'stackblitz' : 'terminal'
 
-  let useCmd =
-    process.platform === "win32" && !process.env?.KIT_WSL
+  let useCmd = process.platform === 'win32' && !process.env?.KIT_WSL
 
   if (useCmd) {
-    template = "cmd"
+    template = 'cmd'
   }
 
-  let binTemplate = await readFile(
-    kitPath("templates", "bin", template),
-    "utf8"
-  )
+  let binTemplate = await readFile(kitPath('templates', 'bin', template), 'utf8')
 
   let binTemplateCompiler = compile(binTemplate)
   let compiledBinTemplate = binTemplateCompiler({
     command,
     type,
     ...global.env,
-    KNODE: knodePath().trim() || home(".knode"),
-    KIT: kitPath().trim() || home(".kit"),
+    KNODE: knodePath().trim() || home('.knode'),
+    KIT: kitPath().trim() || home('.kit'),
     TARGET_PATH: filePath,
   })
 
-  let binDirPath = path.resolve(
-    filePath,
-    "..",
-    "..",
-    ...(jsh ? ["node_modules", ".bin"] : ["bin"])
-  )
+  let binDirPath = path.resolve(filePath, '..', '..', ...(jsh ? ['node_modules', '.bin'] : ['bin']))
   let binFilePath = path.resolve(binDirPath, command)
 
   // if windows, add .cmd extension
   if (useCmd) {
-    binFilePath += ".cmd"
+    binFilePath += '.cmd'
   }
 
   await ensureDir(path.dirname(binFilePath))
@@ -104,7 +79,7 @@ interface Doc {
 }
 
 export let getDocs = async (): Promise<Doc[]> => {
-  let docsPath = kitPath("data", "docs.json")
+  let docsPath = kitPath('data', 'docs.json')
   if (await isFile(docsPath)) {
     return await readJson(docsPath)
   }
@@ -114,22 +89,17 @@ export let getDocs = async (): Promise<Doc[]> => {
 
 export let findDoc = async (dir, file: any) => {
   let docs = await getDocs()
-  let doc = docs?.find(d => {
+  let doc = docs?.find((d) => {
     return d.dir === dir && (file?.value || file) === d.file
   })
 
   return doc
 }
 
-export let addPreview = async (
-  choices: Choice[],
-  dir: string,
-  onlyMatches = false
-) => {
-  let containerClasses =
-    "p-5 prose dark:prose-dark prose-sm"
+export let addPreview = async (choices: Choice[], dir: string, onlyMatches = false) => {
+  let containerClasses = 'p-5 prose dark:prose-dark prose-sm'
   let docs: Doc[] = await getDocs()
-  let dirDocs = docs.filter(d => {
+  let dirDocs = docs.filter((d) => {
     return d?.dir === dir
   })
 
@@ -153,21 +123,20 @@ export let addPreview = async (
   //   }
   // })
 
-  let enhancedChoices = choices.map(c => {
-    if (c?.preview) return c
+  let enhancedChoices = choices.map((c) => {
+    if (c?.preview) {
+      return c
+    }
 
-    let docIndex = dirDocs?.findIndex(d => {
-      return d?.file == c?.value
+    let docIndex = dirDocs?.findIndex((d) => {
+      return d?.file === c?.value
     })
 
     let doc = dirDocs[docIndex]
 
     if (doc?.content) {
       c.preview = async () => {
-        return await highlight(
-          doc.content,
-          containerClasses
-        )
+        return await highlight(doc.content, containerClasses)
       }
     }
 
@@ -175,13 +144,13 @@ export let addPreview = async (
       c.description = doc.description
     }
 
-    c.enter = (doc as any)?.enter || "Select"
+    c.enter = (doc as any)?.enter || 'Select'
 
     return c
   })
 
-  let filteredDocs = dirDocs.filter(dirDoc => {
-    return !choices.find(m => {
+  let filteredDocs = dirDocs.filter((dirDoc) => {
+    return !choices.find((m) => {
       // console.log({ file: dirDoc.file, value: m.value })
       return dirDoc.file === m.value
     })
@@ -190,19 +159,16 @@ export let addPreview = async (
   let docOnlyChoices = onlyMatches
     ? []
     : filteredDocs
-        .map(doc => {
+        .map((doc) => {
           return {
             name: doc.title,
-            description: doc?.description || "",
-            tag: doc?.tag || "",
+            description: doc?.description || '',
+            tag: doc?.tag || '',
             value: doc.file,
             preview: async () => {
-              return await highlight(
-                doc.content,
-                containerClasses
-              )
+              return await highlight(doc.content, containerClasses)
             },
-            enter: "Discuss Topic",
+            enter: 'Discuss Topic',
           }
         })
         .sort((a, b) => (a.name > b.name ? 1 : -1))
@@ -210,20 +176,13 @@ export let addPreview = async (
   return [...enhancedChoices, ...docOnlyChoices]
 }
 
-export let prependImport = (
-  contents: string,
-  { force = false }: { force?: boolean } = {}
-) => {
+export let prependImport = (contents: string, { force = false }: { force?: boolean } = {}) => {
   let insert = true
-  
+
   if (force) {
-    contents = contents.replaceAll(
-      /^import\s+['"]@johnlindquist\/kit['"]\s*\n?/gm, ''
-    )
+    contents = contents.replaceAll(/^import\s+['"]@johnlindquist\/kit['"]\s*\n?/gm, '')
   } else {
-    let foundImport = contents.match(
-      /import\s+['"]@johnlindquist\/kit['"]/
-    )
+    let foundImport = contents.match(/import\s+['"]@johnlindquist\/kit['"]/)
     if (foundImport) {
       insert = false
     }
@@ -238,18 +197,9 @@ ${contents}`
   return contents
 }
 
-export let runUserHandlerIfExists = async (
-  mainScript: string,
-  ...args: string[]
-) => {
-  let handlerPathJS = kenvPath(
-    "scripts",
-    `${global.kitCommand}.js`
-  )
-  let handlerPathTS = kenvPath(
-    "scripts",
-    `${global.kitCommand}.ts`
-  )
+export let runUserHandlerIfExists = async (mainScript: string, ...args: string[]) => {
+  let handlerPathJS = kenvPath('scripts', `${global.kitCommand}.js`)
+  let handlerPathTS = kenvPath('scripts', `${global.kitCommand}.ts`)
 
   let isHandlerJS = await isFile(handlerPathJS)
   let isHandlerTS = await isFile(handlerPathTS)
@@ -258,6 +208,6 @@ export let runUserHandlerIfExists = async (
   } else if (isHandlerTS) {
     await run(handlerPathTS)
   } else {
-    await run(kitPath("main", mainScript + ".js"), ...args)
+    await run(kitPath('main', mainScript + '.js'), ...args)
   }
 }

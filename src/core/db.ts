@@ -1,59 +1,42 @@
-import * as path from "path"
+import * as path from 'node:path'
 import {
-  kitPath,
-  kenvPath,
-  prefsPath,
-  promptDbPath,
+  extensionRegex,
+  getKenvs,
+  getScriptFiles,
   isDir,
   isFile,
-  extensionRegex,
+  kenvPath,
+  kitPath,
+  parseScript,
+  prefsPath,
+  processInBatches,
+  promptDbPath,
   resolveScriptToCommand,
-  scriptsSort,
   scriptsDbPath,
+  scriptsSort,
   statsPath,
   userDbPath,
-  getScriptFiles,
-  getKenvs,
-  parseScript,
-  processInBatches,
-} from "./utils.js"
+} from './utils.js'
 
-import {
-  writeJson,
-  readJson,
-} from "@johnlindquist/kit-internal/fs-extra"
+import { readJson, writeJson } from '@johnlindquist/kit-internal/fs-extra'
 
-import { Choice, Script, PromptDb } from "../types/core"
-import {
-  Low,
-  JSONFile,
-} from "@johnlindquist/kit-internal/lowdb"
-import { RestEndpointMethodTypes } from "@octokit/plugin-rest-endpoint-methods"
+import { JSONFile, Low } from '@johnlindquist/kit-internal/lowdb'
+import type { RestEndpointMethodTypes } from '@octokit/plugin-rest-endpoint-methods'
+import type { Choice, PromptDb, Script } from '../types/core'
 
 export const resolveKenv = (...parts: string[]) => {
   if (global.kitScript) {
-    return path.resolve(
-      global.kitScript,
-      "..",
-      "..",
-      ...parts
-    )
+    return path.resolve(global.kitScript, '..', '..', ...parts)
   }
 
   return kenvPath(...parts)
 }
 
-export let store = async (
-  nameOrPath: string,
-  initialData: any
-): Promise<InstanceType<typeof import("keyv")>> => {
-  let isPath =
-    nameOrPath.includes("/") || nameOrPath.includes("\\")
-  let { default: Keyv } = await import("keyv")
-  let { KeyvFile } = await import("keyv-file")
-  let dbPath = isPath
-    ? nameOrPath
-    : kenvPath("db", `${nameOrPath}.json`)
+export let store = async (nameOrPath: string, initialData: any): Promise<InstanceType<typeof import('keyv')>> => {
+  let isPath = nameOrPath.includes('/') || nameOrPath.includes('\\')
+  let { default: Keyv } = await import('keyv')
+  let { KeyvFile } = await import('keyv-file')
+  let dbPath = isPath ? nameOrPath : kenvPath('db', `${nameOrPath}.json`)
 
   let fileExists = await isFile(dbPath)
 
@@ -66,17 +49,13 @@ export let store = async (
   if (!fileExists) {
     let dataToInit
 
-    if (typeof initialData === "function") {
-      dataToInit = await (
-        initialData as () => Promise<any>
-      )()
+    if (typeof initialData === 'function') {
+      dataToInit = await (initialData as () => Promise<any>)()
     } else {
       dataToInit = initialData
     }
 
-    for await (let [key, value] of Object.entries(
-      dataToInit
-    )) {
+    for await (let [key, value] of Object.entries(dataToInit)) {
       await keyv.set(key, value)
     }
   }
@@ -87,21 +66,17 @@ export let store = async (
 export let db = async <T = any>(
   dataOrKeyOrPath?: string | T | (() => Promise<T>),
   data?: T | (() => Promise<T>),
-  fromCache = true
+  fromCache = true,
 ): Promise<Low & any> => {
   // global.__kitDbMap = global.__kitDbMap || new Map()
-  if (
-    typeof data === "undefined" &&
-    typeof dataOrKeyOrPath !== "string"
-  ) {
+  if (typeof data === 'undefined' && typeof dataOrKeyOrPath !== 'string') {
     data = dataOrKeyOrPath
-    dataOrKeyOrPath =
-      "_" + resolveScriptToCommand(global.kitScript)
+    dataOrKeyOrPath = '_' + resolveScriptToCommand(global.kitScript)
   }
 
-  let dbPath = ""
+  let dbPath = ''
 
-  if (typeof dataOrKeyOrPath === "string") {
+  if (typeof dataOrKeyOrPath === 'string') {
     if (fromCache) {
       global.__kitDbMap = global.__kitDbMap || new Map()
     } else {
@@ -112,18 +87,14 @@ export let db = async <T = any>(
     }
 
     dbPath = dataOrKeyOrPath
-    if (!dataOrKeyOrPath.endsWith(".json")) {
-      dbPath = resolveKenv("db", `${dataOrKeyOrPath}.json`)
+    if (!dataOrKeyOrPath.endsWith('.json')) {
+      dbPath = resolveKenv('db', `${dataOrKeyOrPath}.json`)
     }
   }
 
   let parentExists = await isDir(path.dirname(dbPath))
   if (!parentExists) {
-    console.warn(
-      `Couldn't find ${path.dirname(
-        dbPath
-      )}. Returning defaults...`
-    )
+    console.warn(`Couldn't find ${path.dirname(dbPath)}. Returning defaults...`)
     return {
       ...(data || {}),
       write: () => {},
@@ -146,24 +117,27 @@ export let db = async <T = any>(
         } catch (error) {}
       }
 
-      if (path.dirname(dbPath) === kitPath("db")) {
+      if (path.dirname(dbPath) === kitPath('db')) {
         // await rm(dbPath)
         _db = new Low(jsonFile, result)
         await _db.read()
       }
     }
 
-    if (!_db.data || !fromCache) {
+    if (!(_db.data && fromCache)) {
       let getData = async () => {
-        if (typeof data === "function") {
+        if (typeof data === 'function') {
           let result = await (data as any)()
-          if (Array.isArray(result))
+          if (Array.isArray(result)) {
             return { items: result }
+          }
 
           return result
         }
 
-        if (Array.isArray(data)) return { items: data }
+        if (Array.isArray(data)) {
+          return { items: data }
+        }
 
         return data
       }
@@ -195,18 +169,19 @@ export let db = async <T = any>(
 
   let dbProxy = new Proxy(dbAPI as any, {
     get: (_target, k: string) => {
-      if (k === "then") return _db
+      if (k === 'then') {
+        return _db
+      }
       let d = _db as any
       if (d[k]) {
-        if (typeof d[k] === "function") {
+        if (typeof d[k] === 'function') {
           return d[k].bind(d)
 
-          // TODO: If connected to a parent process, send them as actions:
+          // biome-ignore lint/correctness/noUnreachable: TODO: If connected to a parent process, send them as actions:
           if (process.send) {
             return (...args: any[]) => {
               return sendWait(`DB_GET_${k}` as any, ...args)
             }
-          } else {
           }
         }
         return d[k]
@@ -229,10 +204,7 @@ export let db = async <T = any>(
     },
   })
 
-  if (
-    dataOrKeyOrPath &&
-    typeof dataOrKeyOrPath === "string"
-  ) {
+  if (dataOrKeyOrPath && typeof dataOrKeyOrPath === 'string') {
     global.__kitDbMap.set(dataOrKeyOrPath, dbProxy)
   }
 
@@ -242,9 +214,7 @@ export let db = async <T = any>(
 global.db = db
 global.store = store
 
-export let parseScripts = async (
-  ignoreKenvPattern = /^ignore$/
-) => {
+export let parseScripts = async (ignoreKenvPattern = /^ignore$/) => {
   let scriptFiles = await getScriptFiles()
   let kenvDirs = await getKenvs(ignoreKenvPattern)
 
@@ -260,10 +230,7 @@ export let parseScripts = async (
     scriptInfoPromises.push(asyncScriptInfoFunction)
   }
 
-  let scriptInfo = await processInBatches(
-    scriptInfoPromises,
-    10
-  )
+  let scriptInfo = await processInBatches(scriptInfoPromises, 10)
 
   let timestamps = []
   try {
@@ -278,7 +245,7 @@ export let parseScripts = async (
 
 export let getScriptsDb = async (
   fromCache = true,
-  ignoreKenvPattern = /^ignore$/
+  ignoreKenvPattern = /^ignore$/,
 ): Promise<
   Low & {
     scripts: Script[]
@@ -291,27 +258,21 @@ export let getScriptsDb = async (
     async () => ({
       scripts: await parseScripts(ignoreKenvPattern),
     }),
-    fromCache
+    fromCache,
   )
 
   return dbResult
 }
 
-export let setScriptTimestamp = async (
-  stamp: Stamp
-): Promise<Script[]> => {
+export let setScriptTimestamp = async (stamp: Stamp): Promise<Script[]> => {
   let timestampsDb = await getTimestamps()
-  let index = timestampsDb.stamps.findIndex(
-    s => s.filePath === stamp.filePath
-  )
+  let index = timestampsDb.stamps.findIndex((s) => s.filePath === stamp.filePath)
 
   let oldStamp = timestampsDb.stamps[index]
 
   stamp.timestamp = Date.now()
   if (stamp.runCount) {
-    stamp.runCount = oldStamp?.runCount
-      ? oldStamp.runCount + 1
-      : 1
+    stamp.runCount = oldStamp?.runCount ? oldStamp.runCount + 1 : 1
   }
   if (oldStamp) {
     timestampsDb.stamps[index] = {
@@ -325,18 +286,16 @@ export let setScriptTimestamp = async (
   try {
     await timestampsDb.write()
   } catch (error) {
-    if (global.log) global.log(error)
+    if (global.log) {
+      global.log(error)
+    }
   }
 
   let scriptsDb = await getScriptsDb(false)
-  let script = scriptsDb.scripts.find(
-    s => s.filePath === stamp.filePath
-  )
+  let script = scriptsDb.scripts.find((s) => s.filePath === stamp.filePath)
 
   if (script) {
-    scriptsDb.scripts = scriptsDb.scripts.sort(
-      scriptsSort(timestampsDb.stamps)
-    )
+    scriptsDb.scripts = scriptsDb.scripts.sort(scriptsSort(timestampsDb.stamps))
     try {
       await scriptsDb.write()
     } catch (error) {}
@@ -369,7 +328,7 @@ export let refreshScripts = async () => {
 }
 
 export let getPrefs = async () => {
-  return await db(kitPath("db", "prefs.json"))
+  return await db(kitPath('db', 'prefs.json'))
 }
 
 export type Stamp = {
@@ -385,7 +344,7 @@ export type Stamp = {
 }
 
 export let getTimestamps = async (
-  fromCache = true
+  fromCache = true,
 ): Promise<
   Low & {
     stamps: Stamp[]
@@ -396,74 +355,46 @@ export let getTimestamps = async (
     {
       stamps: [],
     },
-    fromCache
+    fromCache,
   )
 }
 
-export let getScriptFromString = async (
-  script: string
-): Promise<Script> => {
+export let getScriptFromString = async (script: string): Promise<Script> => {
   let scripts = await getScripts(false)
 
-  if (!script.includes(path.sep)) {
-    let result = scripts.find(
-      s =>
-        s.name === script ||
-        s.command === script.replace(extensionRegex, "")
-    )
+  if (script.includes(path.sep)) {
+    let result = scripts.find((s) => path.normalize(s.filePath) === path.normalize(script))
 
     if (!result) {
-      throw new Error(
-        `Cannot find script based on name or command: ${script}`
-      )
-    }
-
-    return result
-  } else {
-    let result = scripts.find(
-      s =>
-        path.normalize(s.filePath) ===
-        path.normalize(script)
-    )
-
-    if (!result) {
-      throw new Error(
-        `Cannot find script based on path: ${script}`
-      )
+      throw new Error(`Cannot find script based on path: ${script}`)
     }
 
     return result
   }
+  let result = scripts.find((s) => s.name === script || s.command === script.replace(extensionRegex, ''))
 
-  throw new Error(
-    `Cannot find script: ${script}. Input should either be the "command-name" of the "/path/to/the/script"`
-  )
+  if (!result) {
+    throw new Error(`Cannot find script based on name or command: ${script}`)
+  }
+
+  return result
 }
 
-export let getScripts = async (
-  fromCache = true,
-  ignoreKenvPattern = /^ignore$/
-) => {
+export let getScripts = async (fromCache = true, ignoreKenvPattern = /^ignore$/) => {
   global.__kitScriptsFromCache = fromCache
-  return (await getScriptsDb(fromCache, ignoreKenvPattern))
-    .scripts
+  return (await getScriptsDb(fromCache, ignoreKenvPattern)).scripts
 }
 
-export interface ScriptValue {
-  (pluck: keyof Script, fromCache?: boolean): () => Promise<
-    Choice<string>[]
-  >
+export type ScriptValue = (pluck: keyof Script, fromCache?: boolean) => () => Promise<Choice<string>[]>
+
+export let scriptValue: ScriptValue = (pluck, fromCache) => async () => {
+  let menuItems: Script[] = await getScripts(fromCache)
+
+  return menuItems.map((script: Script) => ({
+    ...script,
+    value: script[pluck],
+  }))
 }
-
-export let scriptValue: ScriptValue =
-  (pluck, fromCache) => async () => {
-    let menuItems: Script[] = await getScripts(fromCache)
-
-    return menuItems.map((script: Script) => ({
-      ...script,
-      value: script[pluck],
-    }))
-  }
 
 export type AppDb = {
   version: string
@@ -481,9 +412,7 @@ export type AppDb = {
   disableBlurEffect?: boolean
 }
 
-export type UserDb = Partial<
-  RestEndpointMethodTypes["users"]["getAuthenticated"]["response"]["data"]
->
+export type UserDb = Partial<RestEndpointMethodTypes['users']['getAuthenticated']['response']['data']>
 
 export let setUserJson = async (user: UserDb) => {
   await writeJson(userDbPath, user)
@@ -507,15 +436,11 @@ export let getUserJson = async (): Promise<UserDb> => {
 type PrefsDb = {
   showJoin: boolean
 }
-export let getPrefsDb = async (): Promise<
-  Low<any> & PrefsDb
-> => {
+export let getPrefsDb = async (): Promise<Low<any> & PrefsDb> => {
   return await db(prefsPath, { showJoin: true })
 }
 
-export let getPromptDb = async (): Promise<
-  Low<any> & PromptDb
-> => {
+export let getPromptDb = async (): Promise<Low<any> & PromptDb> => {
   return await db(promptDbPath, {
     screens: {},
     clear: false,

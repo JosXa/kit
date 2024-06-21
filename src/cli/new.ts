@@ -1,31 +1,24 @@
+import { getEnvVar } from '../api/kit.js'
 import {
   checkIfCommandExists,
-  stripName,
+  keywordInputTransformer,
   kitMode,
   stripMetadata,
+  stripName,
   uniq,
-  keywordInputTransformer,
-} from "../core/utils.js"
-import {
-  ensureTemplates,
-  prependImport,
-} from "./lib/utils.js"
-import { getUserDefaultMetadataMode } from "./metadata-mode.js"
-import { getEnvVar } from "../api/kit.js"
+} from '../core/utils.js'
+import { ensureTemplates, prependImport } from './lib/utils.js'
+import { getUserDefaultMetadataMode } from './metadata-mode.js'
 
 let inputTransformer = keywordInputTransformer(arg?.keyword)
 
-let choices = input => [
+let choices = (input) => [
   {
     info: true,
-    name: !input
-      ? `Enter a name for your script's metadata`
-      : `Name: ${inputTransformer(input)}`,
-    description: !input
-      ? `The filename will be converted automatically.`
-      : `Filename will be converted to ${stripName(
-          inputTransformer(input)
-        )}.${kitMode()}`,
+    name: input ? `Name: ${inputTransformer(input)}` : `Enter a name for your script's metadata`,
+    description: input
+      ? `Filename will be converted to ${stripName(inputTransformer(input))}.${kitMode()}`
+      : 'The filename will be converted automatically.',
   },
 ]
 
@@ -36,50 +29,42 @@ let name = arg?.pass
   : await arg(
       {
         debounceInput: 0,
-        placeholder: arg?.placeholder || "Enter a name",
-        validate: input => {
+        placeholder: arg?.placeholder || 'Enter a name',
+        validate: (input) => {
           return checkIfCommandExists(stripName(input))
         },
         shortcuts: [],
-        enter: `Create script and open in editor`,
+        enter: 'Create script and open in editor',
         strict: false,
         initialChoices,
       },
-      choices
+      choices,
     )
 
 let { dirPath: selectedKenvPath } = await selectKenv({
-  placeholder: `Select Where to Create Script`,
-  enter: "Create Script in Selected Kenv",
+  placeholder: 'Select Where to Create Script',
+  enter: 'Create Script in Selected Kenv',
 })
 
-if (
-  process?.env?.KIT_EDITOR !== "kit" &&
-  process?.env?.KIT_CONTEXT === "app"
-) {
+if (process?.env?.KIT_EDITOR !== 'kit' && process?.env?.KIT_CONTEXT === 'app') {
   await hide()
 }
 name = inputTransformer(name)
 let command = stripName(name)
 
-let scriptPath = path.join(
-  selectedKenvPath,
-  "scripts",
-  `${command}.${kitMode()}`
-)
+let scriptPath = path.join(selectedKenvPath, 'scripts', `${command}.${kitMode()}`)
 
 let contents = [arg?.npm]
-  .flatMap(x => x)
+  .flat()
   .filter(Boolean)
-  .map(npm => `let {} = await npm("${npm}")`)
-  .join("\n")
+  .map((npm) => `let {} = await npm("${npm}")`)
+  .join('\n')
 
 if (arg?.tip) {
   contents = arg?.tip
 }
 
-let stripExtension = fileName =>
-  fileName.replace(path.extname(fileName), "")
+let stripExtension = (fileName) => fileName.replace(path.extname(fileName), '')
 
 await ensureTemplates()
 
@@ -87,32 +72,20 @@ let ext = `.${kitMode()}`
 
 let template =
   arg?.template ||
-  (await env("KIT_TEMPLATE", {
-    choices: uniq(
-      (
-        await readdir(kenvPath("templates"))
-      ).map(stripExtension)
-    ),
+  (await env('KIT_TEMPLATE', {
+    choices: uniq((await readdir(kenvPath('templates'))).map(stripExtension)),
   }))
 
-let templatePath = kenvPath(
-  "templates",
-  `${template}${ext}`
-)
+let templatePath = kenvPath('templates', `${template}${ext}`)
 
 let templateExists = await pathExists(templatePath)
 if (!templateExists) {
-  console.log(
-    `${template} template doesn't exist. Creating blank ./templates/${template}${ext}`
-  )
+  console.log(`${template} template doesn't exist. Creating blank ./templates/${template}${ext}`)
 
-  await copyFile(
-    kitPath("templates", "scripts", `default${ext}`),
-    kenvPath("templates", `${template}${ext}`)
-  )
+  await copyFile(kitPath('templates', 'scripts', `default${ext}`), kenvPath('templates', `${template}${ext}`))
 }
 
-let templateContent = await readFile(templatePath, "utf8")
+let templateContent = await readFile(templatePath, 'utf8')
 
 let templateCompiler = compile(templateContent)
 let scriptName = arg?.pass || arg?.scriptName
@@ -129,33 +102,23 @@ if (arg?.url || arg?.content) {
   contents = (await get<any>(arg?.url)).data
   if (!arg?.keepMetadata) {
     // TODO(josxa): This should also work with conventions
-    contents = stripMetadata(contents, [
-      "Menu",
-      "Name",
-      "Author",
-      "Twitter",
-      "Alias",
-      "Description",
-    ])
+    contents = stripMetadata(contents, ['Menu', 'Name', 'Author', 'Twitter', 'Alias', 'Description'])
   }
 } else {
-  const nameMetadata = scriptName || name || ""
+  const nameMetadata = scriptName || name || ''
 
   const defaultMetadataMode = await getUserDefaultMetadataMode()
 
   if (defaultMetadataMode === 'comment') {
-    if (
-      (scriptName || command !== name) &&
-      !contents.includes(`Name:`)
-    ) {
+    if ((scriptName || command !== name) && !contents.includes('Name:')) {
       contents = `// Name: ${nameMetadata}
-${contents.startsWith("/") ? contents : "\n" + contents}
+${contents.startsWith('/') ? contents : '\n' + contents}
 `
     }
   } else if (defaultMetadataMode === 'convention') {
     const parts = []
 
-    if (await getEnvVar("KIT_MODE", "ts") === "ts") {
+    if ((await getEnvVar('KIT_MODE', 'ts')) === 'ts') {
       // Direct type annotation
       parts.push('export const metadata: Metadata = {')
     } else {
@@ -173,10 +136,7 @@ ${contents.startsWith("/") ? contents : "\n" + contents}
 }
 
 if (arg?.url) {
-  scriptPath = scriptPath.replace(
-    /\.(js|ts)$/g,
-    path.extname(arg?.url?.replace(/("|')$/g, ""))
-  )
+  scriptPath = scriptPath.replace(/\.(js|ts)$/g, path.extname(arg?.url?.replace(/("|')$/g, '')))
 }
 
 contents = prependImport(contents)
@@ -184,12 +144,10 @@ contents = prependImport(contents)
 await ensureDir(path.dirname(scriptPath))
 await writeFile(scriptPath, contents)
 
-await cli("create-bin", "scripts", command)
+await cli('create-bin', 'scripts', command)
 
-global.log(
-  chalk`\nCreated a {green ${name}} script using the {yellow ${template}} template`
-)
+global.log(chalk`\nCreated a {green ${name}} script using the {yellow ${template}} template`)
 
-await run(kitPath("cli", "edit-script.js"), scriptPath)
+await run(kitPath('cli', 'edit-script.js'), scriptPath)
 
 export { scriptPath }

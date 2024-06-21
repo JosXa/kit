@@ -12,27 +12,25 @@
 // Pass: true
 // keyword: g
 
-import "@johnlindquist/kit"
-import { keywordInputTransformer } from "../core/utils.js"
+import '@johnlindquist/kit'
+import { keywordInputTransformer } from '../core/utils.js'
 
-let GIPHY_API_KEY = await env("GIPHY_API_KEY", {
-  panel: md(
-    `## Get a [Giphy API Key](https://developers.giphy.com/dashboard/)`
-  ),
+let GIPHY_API_KEY = await env('GIPHY_API_KEY', {
+  panel: md('## Get a [Giphy API Key](https://developers.giphy.com/dashboard/)'),
   secret: true,
 })
 
 let transformer = keywordInputTransformer(arg?.keyword)
 
-let search = q =>
+let search = (q) =>
   `https://api.giphy.com/v1/gifs/search?api_key=${GIPHY_API_KEY}&q=${q}&limit=10&offset=0&rating=g&lang=en`
 
-let giphy = async input => {
+let giphy = async (input) => {
   input = transformer(input)
   if (!input) {
     return [
       {
-        name: "Begin Typing to Search Giphy",
+        name: 'Begin Typing to Search Giphy',
         skip: true,
         info: true,
       },
@@ -42,7 +40,7 @@ let giphy = async input => {
   let query = search(input)
   let { data } = await get(query)
 
-  return data.data.map(gif => {
+  return data.data.map((gif) => {
     return {
       name: gif.title.trim() || gif.slug,
       value: gif.images.original.url,
@@ -53,32 +51,30 @@ let giphy = async input => {
 
 let formattedLink = await arg(
   {
-    input: (flag?.pass as string) || "",
-    placeholder: "Search Giphy",
-    enter: "Paste URL",
+    input: (flag?.pass as string) || '',
+    placeholder: 'Search Giphy',
+    enter: 'Paste URL',
     preventCollapse: true,
     shortcuts: [
       {
-        name: "Paste Markdown Link",
+        name: 'Paste Markdown Link',
         key: `${cmd}+m`,
-        bar: "right",
+        bar: 'right',
         onPress: (input, { focused }) => {
           submit(`![${input}](${focused.value})`)
         },
       },
       {
-        name: "HTML <img>",
+        name: 'HTML <img>',
         key: `${cmd}+i`,
-        bar: "right",
+        bar: 'right',
         onPress: (input, { focused }) => {
-          submit(
-            `<img src="${focused.value}" alt="${input}">`
-          )
+          submit(`<img src="${focused.value}" alt="${input}">`)
         },
       },
     ],
   },
-  giphy
+  giphy,
 )
 
 await setSelectedText(formattedLink)

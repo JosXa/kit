@@ -1,6 +1,6 @@
 // build/build-editor-types.ts
-var nodeContent = ``;
-var kitContent = ``;
+var nodeContent = "";
+var kitContent = "";
 var defs = (await readdir(path.resolve("src", "types"))).filter((f) => !f.includes("kit-editor"));
 console.log(defs);
 for (let def of defs) {

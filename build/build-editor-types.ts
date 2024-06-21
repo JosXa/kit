@@ -1,36 +1,23 @@
-import path from "path"
-let nodeContent = ``
-let kitContent = ``
+import path from 'node:path'
+let nodeContent = ''
+let kitContent = ''
 
 // exclude itself 😇
 
-let kitDefs = await readdir(path.resolve("src", "types"))
+let kitDefs = await readdir(path.resolve('src', 'types'))
 
 for (let def of kitDefs) {
-  kitContent += await readFile(
-    path.resolve("src", "types", def),
-    "utf8"
-  )
+  kitContent += await readFile(path.resolve('src', 'types', def), 'utf8')
 }
 
-let globalDefs = path.resolve(
-  "node_modules",
-  "@johnlindquist",
-  "globals",
-  "types"
-)
+let globalDefs = path.resolve('node_modules', '@johnlindquist', 'globals', 'types')
 
-let globalTypeDirs = (await readdir(globalDefs)).filter(
-  dir => !dir.endsWith(".ts")
-)
+let globalTypeDirs = (await readdir(globalDefs)).filter((dir) => !dir.endsWith('.ts'))
 
 console.log({ defs: kitDefs, globalTypeDirs })
 
 // GlobalsAPI
-kitContent += await readFile(
-  path.resolve(globalDefs, "index.d.ts"),
-  "utf8"
-)
+kitContent += await readFile(path.resolve(globalDefs, 'index.d.ts'), 'utf8')
 
 //       content = `declare module '@johnlindquist/kit' {
 
@@ -38,12 +25,9 @@ kitContent += await readFile(
 
 // }`
 
-kitContent = kitContent.replace(
-  /import {(.|\n)*?} from ".*?"/gim,
-  ""
-)
+kitContent = kitContent.replace(/import {(.|\n)*?} from ".*?"/gim, '')
 
-kitContent = kitContent.replace(/export {(.|\n)*?}/gim, "")
+kitContent = kitContent.replace(/export {(.|\n)*?}/gim, '')
 
 kitContent = `
 declare module '@johnlindquist/kit' {
@@ -51,9 +35,7 @@ declare module '@johnlindquist/kit' {
 }
 `
 
-let filePath = "./src/editor/types/kit-editor.d.ts"
+let filePath = './src/editor/types/kit-editor.d.ts'
 
 await ensureDir(path.dirname(filePath))
-await writeFile(filePath, nodeContent + kitContent, "utf8")
-
-export {}
+await writeFile(filePath, nodeContent + kitContent, 'utf8')

@@ -2,4 +2,4 @@
 
 await edit(kenvPath())
 
-export {}
+export type {}

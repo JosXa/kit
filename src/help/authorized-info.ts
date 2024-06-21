@@ -1,5 +1,3 @@
-exec(
-  `open 'https://github.com/johnlindquist/kit/discussions/785'`
-)
+exec(`open 'https://github.com/johnlindquist/kit/discussions/785'`)
 
-export {}
+export type {}

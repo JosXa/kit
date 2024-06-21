@@ -1,27 +1,22 @@
-import { ForkOptions } from "child_process"
-import { Channel } from "../core/enum"
-import { PromptConfig } from "./core"
-import {
-  BrowserWindowConstructorOptions,
-  Display,
-  Rectangle,
-} from "./electron"
+import { ForkOptions } from 'node:child_process'
+import type { Channel } from '../core/enum'
+import type { PromptConfig } from './core'
+import { type BrowserWindowConstructorOptions, Display, Rectangle } from './electron'
 
-export type WidgetOptions =
-  BrowserWindowConstructorOptions & {
-    state?: any
-    draggable?: boolean
-    unpkg?: string[]
-    title?: string
-    ignoreMouse?: boolean
-    ttl?: number
-    center?: boolean
-    containerClass?: string
-    preventEscape?: boolean
-    experimental?: boolean
-    css?: string
-    body?: string
-  }
+export type WidgetOptions = BrowserWindowConstructorOptions & {
+  state?: any
+  draggable?: boolean
+  unpkg?: string[]
+  title?: string
+  ignoreMouse?: boolean
+  ttl?: number
+  center?: boolean
+  containerClass?: string
+  preventEscape?: boolean
+  experimental?: boolean
+  css?: string
+  body?: string
+}
 
 export interface WidgetMessage {
   channel: Channel
@@ -38,9 +33,7 @@ export interface WidgetMessage {
   }
 }
 
-export interface WidgetHandler {
-  (data: WidgetMessage): void
-}
+export type WidgetHandler = (data: WidgetMessage) => void
 
 export interface WidgetAPI {
   setState: (state: any) => void
@@ -71,16 +64,9 @@ export interface WidgetAPI {
   setAlwaysOnTop: (flag: boolean) => void
 }
 
-export interface Widget {
-  (
-    html: string,
-    options?: WidgetOptions
-  ): Promise<WidgetAPI>
-}
+export type Widget = (html: string, options?: WidgetOptions) => Promise<WidgetAPI>
 
-export interface Menubar {
-  (text: string, scripts?: string[]): Promise<void>
-}
+export type Menubar = (text: string, scripts?: string[]) => Promise<void>
 
 export interface TerminalOptions extends PromptConfig {
   command?: string
@@ -107,9 +93,7 @@ export interface ProAPI {
   term: Terminal
 }
 
-export interface ShowLogWindow {
-  (scriptPath?: string): Promise<void>
-}
+export type ShowLogWindow = (scriptPath?: string) => Promise<void>
 
 declare global {
   var widget: Widget

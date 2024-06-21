@@ -1,10 +1,10 @@
-import path from "path"
-import { Bin } from "../core/enum.js"
-import { createBinFromScript } from "../cli/lib/utils.js"
-import { parentPort } from "worker_threads"
-import type { Script } from "../types/core"
+import path from 'node:path'
+import { parentPort } from 'node:worker_threads'
+import { createBinFromScript } from '../cli/lib/utils.js'
+import { Bin } from '../core/enum.js'
+import type { Script } from '../types/core'
 
-parentPort?.on("message", async filePath => {
+parentPort?.on('message', async (filePath) => {
   try {
     let command = path.parse(filePath).name
 
@@ -14,10 +14,7 @@ parentPort?.on("message", async filePath => {
     } as Script)
     console.log(`Created bin from script: ${filePath}`)
   } catch (error) {
-    console.log(
-      `Error creating bin from script: ${filePath}`,
-      error
-    )
+    console.log(`Error creating bin from script: ${filePath}`, error)
   }
   parentPort?.postMessage({ filePath })
 })

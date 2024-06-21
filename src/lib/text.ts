@@ -1,4 +1,4 @@
-import { Channel } from "../core/enum.js"
+import { Channel } from '../core/enum.js'
 
 global.getSelectedText = async () => {
   await global.hide()
@@ -16,8 +16,10 @@ await setSelectedText(`Script Kit is awesome!`)
 ```
 */
 
-global.setSelectedText = async (text = "", hide = true) => {
-  if (hide) await global.hide()
+global.setSelectedText = async (text = '', hide = true) => {
+  if (hide) {
+    await global.hide()
+  }
 
   return await sendWait(Channel.SET_SELECTED_TEXT, {
     text,
@@ -26,5 +28,3 @@ global.setSelectedText = async (text = "", hide = true) => {
 }
 
 global.cutText = () => sendWait(Channel.CUT_TEXT)
-
-export {}

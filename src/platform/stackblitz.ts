@@ -1,13 +1,13 @@
-await import("./base.js")
+await import('./base.js')
 
-process.env.KIT_EDITOR = env.KIT_EDITOR = `stackblitz`
+process.env.KIT_EDITOR = env.KIT_EDITOR = 'stackblitz'
 
 global.edit = async (file, dir, line = 0, col = 0) => {
   await global.$`open ${file}`
 }
 
-global.trash = async fileOrFiles => {
-  if (typeof fileOrFiles === "string") {
+global.trash = async (fileOrFiles) => {
+  if (typeof fileOrFiles === 'string') {
     await $`rm ${fileOrFiles}`
   }
 
@@ -18,4 +18,4 @@ global.trash = async fileOrFiles => {
   }
 }
 
-export {}
+export type {}

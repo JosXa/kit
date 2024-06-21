@@ -1,3 +1,3 @@
-browse(`https://scriptkit.com`)
+browse('https://scriptkit.com')
 
-export {}
+export type {}

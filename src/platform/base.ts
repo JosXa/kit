@@ -1,6 +1,6 @@
-import os from "os"
-import { escapeShortcut } from "../core/utils.js"
-import { PromptConfig } from "../types/core.js"
+import os from 'node:os'
+import { escapeShortcut } from '../core/utils.js'
+import type { PromptConfig } from '../types/core.js'
 
 let unsupported = () => {
   let stack = new Error().stack
@@ -8,43 +8,38 @@ let unsupported = () => {
   let m = stack.match(/.*?unsupported.*?\n(.*?)\n/)
   if (m) {
     let fnName = m[1]
-    throw new Error(
-      `${fnName} is unsupported on ${os.platform()}`
-    )
+    throw new Error(`${fnName} is unsupported on ${os.platform()}`)
   }
 }
 
-global.applescript = async (
-  script,
-  options = { silent: true }
-) => {
+global.applescript = async (script, options = { silent: true }) => {
   unsupported()
 
-  return ""
+  return ''
 }
 
-global.terminal = async script => {
+global.terminal = async (script) => {
   unsupported()
 
-  return ""
+  return ''
 }
 
-global.iterm = async command => {
+global.iterm = async (command) => {
   unsupported()
 
-  return ""
+  return ''
 }
 
-global.hyper = async command => {
+global.hyper = async (command) => {
   unsupported()
 
-  return ""
+  return ''
 }
 
 global.selectKitEditor = async (reset = false) => {
   unsupported()
 
-  return ""
+  return ''
 }
 
 global.edit = async (file, dir, line = 0, col = 0) => {
@@ -56,22 +51,22 @@ global.edit = async (file, dir, line = 0, col = 0) => {
 global.openLog = () => {
   unsupported()
 
-  return ""
+  return ''
 }
 
 global.find = async (config, options = {}) => {
   let defaultConfig = {
-    placeholder: "Search Files",
-    enter: "Select File",
+    placeholder: 'Search Files',
+    enter: 'Select File',
     shortcuts: [escapeShortcut],
   }
-  if (typeof config === "string") {
+  if (typeof config === 'string') {
     defaultConfig.placeholder = config
   }
 
   let disabled = [
     {
-      name: "Type at least 3 characters to search",
+      name: 'Type at least 3 characters to search',
       disableSubmit: true,
     },
   ]
@@ -81,8 +76,8 @@ global.find = async (config, options = {}) => {
       ...defaultConfig,
       ...(config as PromptConfig),
     },
-    async input => {
-      if (!input || input === "undefined") {
+    async (input) => {
+      if (!input || input === 'undefined') {
         return disabled
       }
       if (input?.length < 3) {
@@ -90,7 +85,7 @@ global.find = async (config, options = {}) => {
       }
 
       let files = await fileSearch(input, options)
-      return files.map(p => {
+      return files.map((p) => {
         return {
           name: path.basename(p),
           description: p,
@@ -98,7 +93,7 @@ global.find = async (config, options = {}) => {
           value: p,
         }
       })
-    }
+    },
   )
 
   return selectedFile

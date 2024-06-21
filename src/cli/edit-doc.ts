@@ -1,43 +1,26 @@
-import {
-  escapeShortcut,
-  closeShortcut,
-  cmd,
-  setMetadata,
-} from "../core/utils.js"
+import { closeShortcut, cmd, escapeShortcut, setMetadata } from '../core/utils.js'
 let scriptPath = await arg()
 // TODO: centralize .ts/.js finding logic
 let { name, dir } = path.parse(scriptPath)
 
-if (scriptPath.endsWith(".mjs")) {
-  scriptPath = path.resolve(
-    dir,
-    "..",
-    "scripts",
-    name + ".ts"
-  )
+if (scriptPath.endsWith('.mjs')) {
+  scriptPath = path.resolve(dir, '..', 'scripts', name + '.ts')
 }
 
-let docPath = path.resolve(
-  path.dirname(path.dirname(scriptPath)),
-  "docs",
-  name + ".md"
-)
+let docPath = path.resolve(path.dirname(path.dirname(scriptPath)), 'docs', name + '.md')
 
 await ensureFile(docPath)
 
-if (
-  process.env.KIT_EDITOR === "kit" &&
-  process.env.KIT_CONTEXT === "app"
-) {
-  let value = await readFile(docPath, "utf-8")
+if (process.env.KIT_EDITOR === 'kit' && process.env.KIT_CONTEXT === 'app') {
+  let value = await readFile(docPath, 'utf-8')
   await editor({
     value,
     description: docPath,
-    language: "md",
+    language: 'md',
     shortcuts: [
       {
         ...escapeShortcut,
-        onPress: async input => {
+        onPress: async (input) => {
           await writeFile(docPath, input)
           await mainScript()
         },
@@ -45,13 +28,13 @@ if (
 
       closeShortcut,
       {
-        name: `Save`,
+        name: 'Save',
         key: `${cmd}+s`,
-        onPress: async input => {
+        onPress: async (input) => {
           await writeFile(docPath, input)
           await mainScript()
         },
-        bar: "right",
+        bar: 'right',
       },
     ],
   })

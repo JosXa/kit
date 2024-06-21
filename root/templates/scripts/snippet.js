@@ -1,6 +1,6 @@
 // Name:
 // Snippet:
 
-import "@johnlindquist/kit"
+import '@johnlindquist/kit'
 
-await keyboard.type("Change me!")
+await keyboard.type('Change me!')

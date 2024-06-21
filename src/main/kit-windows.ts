@@ -3,12 +3,22 @@
 // Keyword: kw
 // Enter: Focus
 
-import type { Choice } from "../types/core"
+import type { Choice } from '../types/core'
 
 let windows = await getKitWindows()
-windows = windows.filter(w => !w.isFocused)
+windows = windows.filter((w) => !w.isFocused)
 
-if (!windows.length) {
+if (windows.length) {
+  let id = await arg(
+    {
+      placeholder: 'Focus Kit Window',
+      enter: 'Focus',
+    },
+    windows as Choice[],
+  )
+
+  await focusKitWindow(id)
+} else {
   await div(
     md(`# No Kit Windows Found...
     
@@ -19,16 +29,6 @@ await widget(md(\`# Hello world\`), {
     title: "My Widget",
 })
 ~~~
-    `)
+    `),
   )
-} else {
-  let id = await arg(
-    {
-      placeholder: "Focus Kit Window",
-      enter: "Focus",
-    },
-    windows as Choice[]
-  )
-
-  await focusKitWindow(id)
 }

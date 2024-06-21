@@ -1,74 +1,39 @@
-export {}
-import * as shelljs from "shelljs/index"
-import {
-  add,
-  clone,
-  commit,
-  init,
-  pull,
-  push,
-  addRemote,
-} from "isomorphic-git"
+import type { add, addRemote, clone, commit, init, pull, push } from 'isomorphic-git'
+import type * as shelljs from 'shelljs/index'
 
 export type Trash = (
   input: string | readonly string[],
   option?: {
     glob?: boolean
-  }
+  },
 ) => Promise<void>
 
 export type Git = {
-  clone: (
-    repo: string,
-    dir: string,
-    options?: Partial<Parameters<typeof clone>[0]>
-  ) => ReturnType<typeof clone>
-  pull: (
-    dir: string,
-    options?: Partial<Parameters<typeof pull>[0]>
-  ) => ReturnType<typeof pull>
-  push: (
-    dir: string,
-    options?: Partial<Parameters<typeof push>[0]>
-  ) => ReturnType<typeof push>
-  add: (
-    dir: string,
-    glob: string,
-    options?: Partial<Parameters<typeof add>[0]>
-  ) => ReturnType<typeof add>
-  commit: (
-    dir: string,
-    message: string,
-    options?: Partial<Parameters<typeof commit>[0]>
-  ) => ReturnType<typeof commit>
-  init: (
-    dir: string,
-    options?: Partial<Parameters<typeof init>[0]>
-  ) => ReturnType<typeof init>
+  clone: (repo: string, dir: string, options?: Partial<Parameters<typeof clone>[0]>) => ReturnType<typeof clone>
+  pull: (dir: string, options?: Partial<Parameters<typeof pull>[0]>) => ReturnType<typeof pull>
+  push: (dir: string, options?: Partial<Parameters<typeof push>[0]>) => ReturnType<typeof push>
+  add: (dir: string, glob: string, options?: Partial<Parameters<typeof add>[0]>) => ReturnType<typeof add>
+  commit: (dir: string, message: string, options?: Partial<Parameters<typeof commit>[0]>) => ReturnType<typeof commit>
+  init: (dir: string, options?: Partial<Parameters<typeof init>[0]>) => ReturnType<typeof init>
   addRemote: (
     dir: string,
     remote: string,
     url: string,
-    options?: Partial<Parameters<typeof addRemote>[0]>
+    options?: Partial<Parameters<typeof addRemote>[0]>,
   ) => ReturnType<typeof addRemote>
 }
-export type Open = typeof import("open/index").default
-export type OpenApp = typeof import("open/index").openApp
+export type Open = typeof import('open/index').default
+export type OpenApp = typeof import('open/index').openApp
 
-type NodeNotify =
-  typeof import("node-notifier/index").notify
-export interface Notify {
-  (...args: Parameters<NodeNotify>): ReturnType<NodeNotify>
-}
+type NodeNotify = typeof import('node-notifier/index').notify
+export type Notify = (...args: Parameters<NodeNotify>) => ReturnType<NodeNotify>
 
-export interface OnTab {
-  (name: string, fn: () => void): void
-}
+export type OnTab = (name: string, fn: () => void) => void
 
-type Zx = typeof import("zx/build/index")
+type Zx = typeof import('zx/build/index')
 
 export interface PackagesApi {
-  cd: Zx["cd"]
+  cd: Zx['cd']
   cp: typeof shelljs.cp
   chmod: typeof shelljs.chmod
   echo: typeof shelljs.echo
@@ -89,7 +54,7 @@ export interface PackagesApi {
   rm: Trash
   notify: Notify
 
-  $: Zx["$"]
+  $: Zx['$']
 }
 
 export interface DegitOptions {
@@ -104,13 +69,10 @@ export interface IDegit {
 
   clone(dest: string): Promise<void>
 }
-type Degit = (
-  repo: string,
-  options?: DegitOptions
-) => IDegit
+type Degit = (repo: string, options?: DegitOptions) => IDegit
 
 declare global {
-  var cd: Zx["cd"]
+  var cd: Zx['cd']
   var cp: typeof shelljs.cp
   var chmod: typeof shelljs.chmod
   var echo: typeof shelljs.echo
@@ -142,5 +104,5 @@ declare global {
 
   var onTabIndex: number
 
-  var $: Zx["$"]
+  var $: Zx['$']
 }

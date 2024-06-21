@@ -1,13 +1,13 @@
 // Name: System Events Scripts
 // Description: Select a Script to Edit
 
-import { getScripts } from "../core/db.js"
-import { cliShortcuts } from "../core/utils.js"
+import { getScripts } from '../core/db.js'
+import { cliShortcuts } from '../core/utils.js'
 let scriptsCache = await getScripts()
 let filePath = await arg(
   {
-    placeholder: "Select System Event Script to Edit",
-    enter: "Edit",
+    placeholder: 'Select System Event Script to Edit',
+    enter: 'Edit',
     shortcuts: cliShortcuts,
     onNoChoices: async () => {
       setPanel(
@@ -27,18 +27,18 @@ Available events:
 - user-did-become-active
 - user-did-resign-active
 - Read about the available events [here](https://www.electronjs.org/docs/latest/api/power-monitor#events)
-        `)
+        `),
       )
     },
   },
   scriptsCache
-    .filter(script => script?.system)
-    .map(script => {
+    .filter((script) => script?.system)
+    .map((script) => {
       return {
         name: script?.menu || script.command,
         description: `Runs on ${script.system}`,
         value: script.filePath,
       }
-    })
+    }),
 )
-await run(kitPath("cli", "edit-script.js"), filePath)
+await run(kitPath('cli', 'edit-script.js'), filePath)

@@ -1,9 +1,4 @@
-import {
-  debounce,
-  isString,
-  isUndefined,
-  sortBy,
-} from "../core/utils.js"
+import { debounce, isString, isUndefined, sortBy } from '../core/utils.js'
 
 global.debounce = debounce
 global.sortBy = sortBy

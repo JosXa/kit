@@ -1,77 +1,68 @@
 // Description: Git Push Kenv Repo
 
-import {
-  getKenvs,
-  getShellSeparator,
-} from "../core/utils.js"
+import { getKenvs, getShellSeparator } from '../core/utils.js'
 
-let kenvs = (await getKenvs()).map(value => ({
+let kenvs = (await getKenvs()).map((value) => ({
   name: path.basename(value),
   value,
 }))
 
 kenvs.unshift({
-  name: "main",
+  name: 'main',
   value: kenvPath(),
 })
 
-let dir = await arg("Push which kenv", kenvs)
+let dir = await arg('Push which kenv', kenvs)
 
 cd(dir)
 
 let shellSep = getShellSeparator()
 
 await term({
-  command: `git status`,
+  command: 'git status',
   cwd: dir,
   shortcuts: [
     {
-      name: "Add, Commit, Push",
+      name: 'Add, Commit, Push',
       key: `${cmd}+p`,
-      bar: "left",
+      bar: 'left',
       onPress: async () => {
-        term.write(
-          `git add . ${shellSep} git commit -m "pushed from Script Kit" ${shellSep} git push`
-        )
+        term.write(`git add . ${shellSep} git commit -m "pushed from Script Kit" ${shellSep} git push`)
       },
     },
     {
-      name: "Add All",
+      name: 'Add All',
       key: `${cmd}+g`,
-      bar: "right",
+      bar: 'right',
       onPress: async () => {
-        term.write("git add .")
+        term.write('git add .')
       },
     },
     {
-      name: "Commit",
+      name: 'Commit',
       key: `${cmd}+i`,
-      bar: "right",
+      bar: 'right',
       onPress: async () => {
         term.write(`git commit -m "pushed from Script Kit"`)
       },
     },
     {
-      name: "Push",
+      name: 'Push',
       key: `${cmd}+t`,
-      bar: "right",
+      bar: 'right',
       onPress: async () => {
-        term.write(`git push`)
+        term.write('git push')
       },
     },
     {
-      name: "Exit",
+      name: 'Exit',
       key: `${cmd}+w`,
-      bar: "right",
+      bar: 'right',
       onPress: async () => {
-        submit("")
+        submit('')
       },
     },
   ],
 })
 
 await mainScript()
-
-// Prompt if stash exists to re-apply changes
-
-export {}

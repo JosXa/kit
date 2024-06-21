@@ -1,3 +1,3 @@
-open("https://scriptkit.com/tutorials")
+open('https://scriptkit.com/tutorials')
 
-export {}
+export type {}

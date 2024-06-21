@@ -4,19 +4,19 @@
 // Cache: true
 
 let noChoices = false
-let onNoChoices = async input => {
+let onNoChoices = async (input) => {
   noChoices = true
   setPanel(
     md(`# No Examples Found for "${input}"
 
 - Share one! ❤️ [Share on GitHub Discussions](https://github.com/johnlindquist/kit/discussions/categories/share)
 - Request one 💡 [Request on GitHub Discussions](https://github.com/johnlindquist/kit/discussions/categories/ideas)
-`)
+`),
   )
 }
 
 let getHot = async () => {
-  let hotPath = kitPath("data", "hot.json")
+  let hotPath = kitPath('data', 'hot.json')
   if (await isFile(hotPath)) {
     return await readJson(hotPath)
   }
@@ -29,14 +29,14 @@ let loadHotChoices = async () => {
     let hot = await getHot()
 
     return hot
-      .filter(choice => choice?.category?.name !== "Share")
-      .map(choice => {
+      .filter((choice) => choice?.category?.name !== 'Share')
+      .map((choice) => {
         choice.preview = async () => {
           if (choice?.body) {
             return await highlight(choice?.body)
           }
 
-          return ""
+          return ''
         }
         return choice
       })
@@ -49,8 +49,8 @@ let choices = await loadHotChoices()
 
 let url = await arg(
   {
-    name: "Announcements",
-    placeholder: `Announcements`,
+    name: 'Announcements',
+    placeholder: 'Announcements',
     input: arg?.input,
     preventCollapse: true,
     onNoChoices,
@@ -58,17 +58,15 @@ let url = await arg(
       noChoices = false
     },
     shortcuts: [],
-    enter: "Open in Browser",
+    enter: 'Open in Browser',
   },
-  choices
+  choices,
 )
 
 if (noChoices) {
-  browse(
-    `https://github.com/johnlindquist/kit/discussions/categories/share`
-  )
+  browse('https://github.com/johnlindquist/kit/discussions/categories/share')
 } else {
   browse(url)
 }
 
-export {}
+export type {}

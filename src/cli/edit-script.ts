@@ -1,11 +1,7 @@
-import {
-  escapeShortcut,
-  closeShortcut,
-  cmd,
-} from "../core/utils.js"
+import { closeShortcut, cmd, escapeShortcut } from '../core/utils.js'
 
-let isApp = process.env.KIT_CONTEXT === "app"
-let isKitEditor = process.env.KIT_EDITOR === "kit"
+let isApp = process.env.KIT_CONTEXT === 'app'
+let isKitEditor = process.env.KIT_EDITOR === 'kit'
 
 if (isApp && !isKitEditor) {
   await hide()
@@ -13,18 +9,13 @@ if (isApp && !isKitEditor) {
 
 let scriptPath = await arg()
 // TODO: centralize .ts/.js finding logic
-if (scriptPath.endsWith(".mjs")) {
+if (scriptPath.endsWith('.mjs')) {
   let { name, dir } = path.parse(scriptPath)
-  scriptPath = path.resolve(
-    dir,
-    "..",
-    "scripts",
-    name + ".ts"
-  )
+  scriptPath = path.resolve(dir, '..', 'scripts', name + '.ts')
 }
 
 if (isApp && isKitEditor) {
-  let value = await readFile(scriptPath, "utf-8")
+  let value = await readFile(scriptPath, 'utf-8')
   let extraLibs = await global.getExtraLibs()
   await editor({
     value,
@@ -34,42 +25,39 @@ if (isApp && isKitEditor) {
     shortcuts: [
       {
         ...escapeShortcut,
-        onPress: async input => {
+        onPress: async (input) => {
           await writeFile(scriptPath, input)
           await wait(200)
           await mainScript()
         },
       },
       {
-        name: `Duplicate`,
+        name: 'Duplicate',
         key: `${cmd}+shift+d`,
-        bar: "right",
+        bar: 'right',
         onPress: async () => {
-          await run(
-            kitPath("cli", "duplicate.js"),
-            scriptPath
-          )
+          await run(kitPath('cli', 'duplicate.js'), scriptPath)
         },
       },
       closeShortcut,
       {
-        name: `Save`,
+        name: 'Save',
         key: `${cmd}+s`,
-        onPress: async input => {
+        onPress: async (input) => {
           await writeFile(scriptPath, input)
           await wait(200)
           await mainScript()
         },
-        bar: "right",
+        bar: 'right',
       },
       {
-        name: `Run`,
+        name: 'Run',
         key: `${cmd}+o`,
-        onPress: async input => {
+        onPress: async (input) => {
           await writeFile(scriptPath, input)
           await run(scriptPath)
         },
-        bar: "right",
+        bar: 'right',
       },
     ],
   })

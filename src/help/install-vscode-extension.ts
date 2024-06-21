@@ -1,3 +1,3 @@
-open(`vscode:extension/johnlindquist.kit-extension`)
+open('vscode:extension/johnlindquist.kit-extension')
 
-export {}
+export type {}

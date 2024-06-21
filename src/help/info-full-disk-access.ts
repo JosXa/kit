@@ -1,5 +1,5 @@
-import { Channel } from "../core/enum.js"
-import { cmd } from "../core/utils.js"
+import { Channel } from '../core/enum.js'
+import { cmd } from '../core/utils.js'
 
 let html = md(`
 ## Browsing Files Requires Full Disk Access
@@ -11,12 +11,12 @@ Once enabled, quit Kit.app from the menubar and restart it.
 
 await div({
   html,
-  enter: "Back to Main",
+  enter: 'Back to Main',
   shortcuts: [
     {
-      name: "Quit",
+      name: 'Quit',
       key: `${cmd}+q`,
-      bar: "right",
+      bar: 'right',
       onPress: async () => {
         send(Channel.QUIT_APP)
       },
@@ -25,5 +25,3 @@ await div({
 })
 
 await mainScript()
-
-export {}

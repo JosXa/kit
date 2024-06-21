@@ -1,18 +1,18 @@
-import { KIT_FIRST_PATH } from "../core/utils.js"
+import { KIT_FIRST_PATH } from '../core/utils.js'
 
-let examplesDir = kenvPath("kenvs", "examples")
+let examplesDir = kenvPath('kenvs', 'examples')
 if (await isDir(examplesDir)) {
-  await exec(`git stash`, {
+  await exec('git stash', {
     cwd: examplesDir,
   })
-  let { stdout } = await exec(`git pull`, {
+  let { stdout } = await exec('git pull', {
     cwd: examplesDir,
   })
 
-  if (!stdout.includes("Already up to date.")) {
+  if (!stdout.includes('Already up to date.')) {
     try {
-      await exec(`npm i`, {
-        cwd: kenvPath("kenvs", "examples"),
+      await exec('npm i', {
+        cwd: kenvPath('kenvs', 'examples'),
         env: {
           ...global.env,
           PATH: KIT_FIRST_PATH,
@@ -21,5 +21,3 @@ if (await isDir(examplesDir)) {
     } catch (error) {}
   }
 }
-
-export {}

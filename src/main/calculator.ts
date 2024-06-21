@@ -1,27 +1,26 @@
 // Name: Calculator
 // Description: Evaluate a mathematical expression
 
-import { escapeShortcut } from "../core/utils.js"
+import { escapeShortcut } from '../core/utils.js'
 
-let { default: calc } = await import("advanced-calculator")
-let input = args?.shift() || ""
+let { default: calc } = await import('advanced-calculator')
+let input = args?.shift() || ''
 
-let format = input =>
-  `<div class="text-2xl px-4 flex items-center justify-center">${input}</div>`
+let format = (input) => `<div class="text-2xl px-4 flex items-center justify-center">${input}</div>`
 
 let result = await arg(
   {
-    placeholder: "Calculator",
-    enter: "Paste Result",
+    placeholder: 'Calculator',
+    enter: 'Paste Result',
     shortcuts: [
       escapeShortcut,
       {
-        name: "Copy Result",
+        name: 'Copy Result',
         key: `${cmd}+c`,
-        onPress: async input => {
+        onPress: async (input) => {
           copy(String(calc.evaluate(input)))
         },
-        bar: "right",
+        bar: 'right',
       },
     ],
     input: String(input),
@@ -32,19 +31,19 @@ let result = await arg(
       await mainScript()
     },
   },
-  async input => {
-    input = String(input).trim() || ""
+  async (input) => {
+    input = String(input).trim() || ''
 
-    if (input.endsWith("=")) {
+    if (input.endsWith('=')) {
       input = input.slice(0, -1)
       setInput(String(calc.evaluate(input)))
       return
     }
 
-    if (!input || input === "undefined") {
+    if (!input || input === 'undefined') {
       return [
         {
-          name: `Waiting for input...`,
+          name: 'Waiting for input...',
           info: true,
           miss: true,
         },
@@ -63,10 +62,10 @@ let result = await arg(
       }
       let result = String(calc.evaluate(input))
 
-      if (result === "Invalid input") {
+      if (result === 'Invalid input') {
         return [
           {
-            name: `Invalid Input 🤔`,
+            name: 'Invalid Input 🤔',
             info: true,
             miss: true,
           },
@@ -83,11 +82,11 @@ let result = await arg(
       return [
         {
           name: `Failed to parse: ${input}`,
-          info: "onNoChoices",
+          info: 'onNoChoices',
         },
       ]
     }
-  }
+  },
 )
 if (result) {
   try {

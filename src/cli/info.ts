@@ -9,4 +9,4 @@ await div({
   html,
 })
 
-export {}
+export type {}

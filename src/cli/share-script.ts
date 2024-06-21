@@ -1,15 +1,13 @@
 //Menu: Share Script as Gist
 //Description: Create a gist from the selected script
 
-import { authenticate } from "../api/kit.js"
+import { authenticate } from '../api/kit.js'
 
-let { filePath, command } = await selectScript(
-  `Share which script?`
-)
+let { filePath, command } = await selectScript('Share which script?')
 
 let octokit = await authenticate()
 
-div(md(`## Creating Gist...`))
+div(md('## Creating Gist...'))
 setLoading(true)
 
 let fileBasename = path.basename(filePath)
@@ -17,15 +15,13 @@ let fileBasename = path.basename(filePath)
 let response = await octokit.rest.gists.create({
   files: {
     [fileBasename]: {
-      content: await readFile(filePath, "utf8"),
+      content: await readFile(filePath, 'utf8'),
     },
   },
   public: true,
 })
 
-let link =
-  response.data?.files[command + path.extname(filePath)]
-    .raw_url
+let link = response.data?.files[command + path.extname(filePath)].raw_url
 
 copy(link)
 
@@ -35,7 +31,5 @@ await div(
   await highlight(`## Copied Gist to Clipboard
 
   [${link}](${link})
-`)
+`),
 )
-
-export {}

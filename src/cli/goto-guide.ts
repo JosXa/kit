@@ -1,5 +1,3 @@
-exec(
-  `open https://scriptkit.com/guide`
-)
+exec('open https://scriptkit.com/guide')
 
-export {}
+export type {}

@@ -1,16 +1,16 @@
-import { getKenvs } from "../core/utils.js"
+import { getKenvs } from '../core/utils.js'
 
-let kenvs = (await getKenvs()).map(value => ({
+let kenvs = (await getKenvs()).map((value) => ({
   name: path.basename(value),
   value,
 }))
 
 kenvs.unshift({
-  name: "main",
+  name: 'main',
   value: kenvPath(),
 })
 
-let dir = await arg("Open which kenv", kenvs)
+let dir = await arg('Open which kenv', kenvs)
 
 cd(dir)
 
@@ -22,5 +22,3 @@ await term({
 await getScripts(false)
 
 await mainScript()
-
-export {}

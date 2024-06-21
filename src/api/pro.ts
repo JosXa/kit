@@ -1,11 +1,6 @@
-import { Channel, UI } from "../core/enum.js"
-import { KIT_FIRST_PATH } from "../core/utils.js"
-import {
-  TerminalOptions as TerminalConfig,
-  Widget,
-  WidgetAPI,
-  WidgetMessage,
-} from "../types/pro.js"
+import { Channel, UI } from '../core/enum.js'
+import { KIT_FIRST_PATH } from '../core/utils.js'
+import type { TerminalOptions as TerminalConfig, Widget, WidgetAPI, WidgetMessage } from '../types/pro.js'
 
 // TODO: Support urls. Make sure urls handle "widgetId" for sending messages
 let widget: Widget = async (html, options = {}) => {
@@ -17,14 +12,13 @@ let widget: Widget = async (html, options = {}) => {
       command: global.kitCommand,
       html,
       options: {
-        containerClass:
-          "overflow-auto flex justify-center items-center v-screen h-screen",
+        containerClass: 'overflow-auto flex justify-center items-center v-screen h-screen',
         draggable: true,
         resizable: true,
         ...options,
       },
     },
-    false
+    false,
   )
 
   type WidgetHandler = (message: WidgetMessage) => void
@@ -43,13 +37,7 @@ let widget: Widget = async (html, options = {}) => {
 
   let api: WidgetAPI = {
     capturePage: async () => {
-      return (
-        await global.getDataFromApp(
-          Channel.WIDGET_CAPTURE_PAGE,
-          { widgetId },
-          false
-        )
-      )?.imagePath
+      return (await global.getDataFromApp(Channel.WIDGET_CAPTURE_PAGE, { widgetId }, false))?.imagePath
     },
     // update: (html, options = {}) => {
     //   global.send(Channel.WIDGET_UPDATE, {
@@ -73,63 +61,63 @@ let widget: Widget = async (html, options = {}) => {
     show: () => {
       global.send(Channel.WIDGET_CALL, {
         widgetId,
-        method: "show",
+        method: 'show',
         args: [],
       })
     },
     hide: () => {
       global.send(Channel.WIDGET_CALL, {
         widgetId,
-        method: "hide",
+        method: 'hide',
         args: [],
       })
     },
     showInactive: () => {
       global.send(Channel.WIDGET_CALL, {
         widgetId,
-        method: "showInactive",
+        method: 'showInactive',
         args: [],
       })
     },
     setAlwaysOnTop: (flag: boolean) => {
       global.send(Channel.WIDGET_CALL, {
         widgetId,
-        method: "setAlwaysOnTop",
+        method: 'setAlwaysOnTop',
         args: [flag],
       })
     },
     focus: () => {
       global.send(Channel.WIDGET_CALL, {
         widgetId,
-        method: "focus",
+        method: 'focus',
         args: [],
       })
     },
     blur: () => {
       global.send(Channel.WIDGET_CALL, {
         widgetId,
-        method: "blur",
+        method: 'blur',
         args: [],
       })
     },
     minimize: () => {
       global.send(Channel.WIDGET_CALL, {
         widgetId,
-        method: "minimize",
+        method: 'minimize',
         args: [],
       })
     },
     maximize: () => {
       global.send(Channel.WIDGET_CALL, {
         widgetId,
-        method: "maximize",
+        method: 'maximize',
         args: [],
       })
     },
     restore: () => {
       global.send(Channel.WIDGET_CALL, {
         widgetId,
-        method: "restore",
+        method: 'restore',
         args: [],
       })
     },
@@ -182,102 +170,70 @@ let widget: Widget = async (html, options = {}) => {
     onInit: (handler: WidgetHandler) => {
       initHandler = handler
     },
-    executeJavaScript: async js => {
-      return await global.sendWaitLong(
-        Channel.WIDGET_EXECUTE_JAVASCRIPT,
-        {
-          widgetId,
-          value: js,
-        }
-      )
+    executeJavaScript: async (js) => {
+      return await global.sendWaitLong(Channel.WIDGET_EXECUTE_JAVASCRIPT, {
+        widgetId,
+        value: js,
+      })
     },
   }
 
   let messageHandler = (data: WidgetMessage) => {
-    if (
-      data.channel == Channel.WIDGET_CUSTOM &&
-      data.widgetId == widgetId
-    ) {
+    if (data.channel === Channel.WIDGET_CUSTOM && data.widgetId === widgetId) {
       customHandler(data)
     }
 
-    if (
-      data.channel == Channel.WIDGET_CLICK &&
-      data.widgetId == widgetId
-    ) {
+    if (data.channel === Channel.WIDGET_CLICK && data.widgetId === widgetId) {
       clickHandler(data)
     }
 
-    if (
-      data.channel == Channel.WIDGET_DROP &&
-      data.widgetId == widgetId
-    ) {
+    if (data.channel === Channel.WIDGET_DROP && data.widgetId === widgetId) {
       dropHandler(data)
     }
 
-    if (
-      data.channel == Channel.WIDGET_MOUSE_DOWN &&
-      data.widgetId == widgetId
-    ) {
+    if (data.channel === Channel.WIDGET_MOUSE_DOWN && data.widgetId === widgetId) {
       mouseDownHandler(data)
     }
 
-    if (
-      data.channel == Channel.WIDGET_INPUT &&
-      data.widgetId == widgetId
-    ) {
+    if (data.channel === Channel.WIDGET_INPUT && data.widgetId === widgetId) {
       inputHandler(data)
     }
 
-    if (
-      data.channel == Channel.WIDGET_RESIZED &&
-      data.widgetId == widgetId
-    ) {
+    if (data.channel === Channel.WIDGET_RESIZED && data.widgetId === widgetId) {
       resizedHandler(data)
     }
 
-    if (
-      data.channel == Channel.WIDGET_MOVED &&
-      data.widgetId == widgetId
-    ) {
+    if (data.channel === Channel.WIDGET_MOVED && data.widgetId === widgetId) {
       movedHandler(data)
     }
 
     if (data.channel === Channel.WIDGET_END) {
       if (data.widgetId === widgetId) {
-        process.off("message", messageHandler)
+        process.off('message', messageHandler)
         closeHandler(data)
       }
     }
 
-    if (
-      data.channel == Channel.WIDGET_INIT &&
-      data.widgetId == widgetId
-    ) {
+    if (data.channel === Channel.WIDGET_INIT && data.widgetId === widgetId) {
       initHandler(data)
     }
   }
 
-  process.on("message", messageHandler)
+  process.on('message', messageHandler)
 
   return api
 }
 
-let menu = async (
-  label: string,
-  scripts: string[] = []
-) => {
+let menu = async (label: string, scripts: string[] = []) => {
   return sendWait(Channel.SET_TRAY, {
     label,
     scripts,
   })
 }
 
-global.term = async (
-  commandOrConfig: string | TerminalConfig = ""
-) => {
+global.term = async (commandOrConfig: string | TerminalConfig = '') => {
   let config: TerminalConfig = {
-    command: "",
+    command: '',
     env: {
       ...global.env,
       PATH: KIT_FIRST_PATH,
@@ -286,27 +242,27 @@ global.term = async (
     previewWidthPercent: 40,
     shortcuts: [
       {
-        name: "Exit",
+        name: 'Exit',
         key: `${cmd}+w`,
-        bar: "right",
+        bar: 'right',
         onPress: () => {
           exit()
         },
       },
       {
-        name: "Continue",
+        name: 'Continue',
         key: `${cmd}+enter`,
-        bar: "right",
+        bar: 'right',
         onPress: () => {
-          send(Channel.TERM_EXIT, "")
+          send(Channel.TERM_EXIT, '')
         },
       },
     ],
   }
 
-  if (typeof commandOrConfig === "string") {
+  if (typeof commandOrConfig === 'string') {
     config.command = commandOrConfig
-  } else if (typeof commandOrConfig === "object") {
+  } else if (typeof commandOrConfig === 'object') {
     config = {
       ...config,
       ...(commandOrConfig as TerminalConfig),
@@ -316,11 +272,11 @@ global.term = async (
   if (global.__kitCurrentUI === UI.term) {
     // Hack to clear the terminal when it's already open
     await div({
-      html: ``,
+      html: '',
       height: PROMPT.HEIGHT.BASE,
       onInit: async () => {
         await wait(100)
-        submit("")
+        submit('')
       },
     })
   }
@@ -339,6 +295,6 @@ global.term.write = async (text: string) => {
 global.widget = widget
 global.menu = menu
 
-global.showLogWindow = async (scriptPath = "") => {
+global.showLogWindow = async (scriptPath = '') => {
   await sendWait(Channel.SHOW_LOG_WINDOW, scriptPath)
 }

@@ -1,49 +1,33 @@
 // Name: Window Manager
 // Description: Position and resize windows
 
-import "@johnlindquist/kit"
+import '@johnlindquist/kit'
 
 let activeApp = await getActiveAppInfo()
 let activeScreen = await getActiveScreen()
 let screens = await getScreens()
 
 let rightScreen = screens
-  .filter(
-    screen => screen.workArea.x > activeScreen.workArea.x
-  )
-  .sort((a, b) =>
-    a.workArea.x < b.workArea.x ? 1 : -1
-  )?.[0]
+  .filter((screen) => screen.workArea.x > activeScreen.workArea.x)
+  .sort((a, b) => (a.workArea.x < b.workArea.x ? 1 : -1))?.[0]
 
 let leftScreen = screens
-  .filter(
-    screen => screen.workArea.x < activeScreen.workArea.x
-  )
-  .sort((a, b) =>
-    a.workArea.x > b.workArea.x ? 1 : -1
-  )?.[0]
+  .filter((screen) => screen.workArea.x < activeScreen.workArea.x)
+  .sort((a, b) => (a.workArea.x > b.workArea.x ? 1 : -1))?.[0]
 
 let downScreen = screens
-  .filter(
-    screen => screen.workArea.y > activeScreen.workArea.y
-  )
-  .sort((a, b) =>
-    a.workArea.y < b.workArea.y ? 1 : -1
-  )?.[0]
+  .filter((screen) => screen.workArea.y > activeScreen.workArea.y)
+  .sort((a, b) => (a.workArea.y < b.workArea.y ? 1 : -1))?.[0]
 
 let upScreen = screens
-  .filter(
-    screen => screen.workArea.y < activeScreen.workArea.y
-  )
-  .sort((a, b) =>
-    a.workArea.y > b.workArea.y ? 1 : -1
-  )?.[0]
+  .filter((screen) => screen.workArea.y < activeScreen.workArea.y)
+  .sort((a, b) => (a.workArea.y > b.workArea.y ? 1 : -1))?.[0]
 
 let choices = []
 
 if (upScreen) {
   choices.push({
-    name: "Up",
+    name: 'Up',
     description: `Screen id: ${upScreen.id}`,
     value: upScreen,
   })
@@ -51,7 +35,7 @@ if (upScreen) {
 
 if (downScreen) {
   choices.push({
-    name: "Down",
+    name: 'Down',
     description: `Screen id: ${downScreen.id}`,
     value: downScreen,
   })
@@ -59,7 +43,7 @@ if (downScreen) {
 
 if (leftScreen) {
   choices.push({
-    name: "Left",
+    name: 'Left',
     description: `Screen id: ${leftScreen.id}`,
     value: leftScreen,
   })
@@ -67,7 +51,7 @@ if (leftScreen) {
 
 if (rightScreen) {
   choices.push({
-    name: "Right",
+    name: 'Right',
     description: `Screen id: ${rightScreen.id}`,
     value: rightScreen,
   })
@@ -76,8 +60,8 @@ if (rightScreen) {
 let activeWorkArea = activeScreen.workArea
 
 choices.push({
-  name: "Center",
-  description: `Center on screen`,
+  name: 'Center',
+  description: 'Center on screen',
   value: {
     workArea: {
       x: activeWorkArea.x + activeWorkArea.width / 6,

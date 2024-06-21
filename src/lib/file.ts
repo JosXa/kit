@@ -1,20 +1,11 @@
-import { Channel } from "../core/enum.js"
+import { Channel } from '../core/enum.js'
 
 // TODO: Optimize, etc
 // "kMDItemContentType = 'com.apple.application-bundle'"
-global.fileSearch = async (
-  name,
-  { onlyin = "~", kind = "", kMDItemContentType = "" } = {}
-) => {
-  let command = `/usr/bin/mdfind${
-    name ? ` -name ${name}` : ""
-  }${onlyin ? ` -onlyin ${onlyin}` : ``}${
-    kind ? ` "kind:${kind}"` : ``
-  }${
-    kMDItemContentType
-      ? ` "kMDItemContentType:${kMDItemContentType}"`
-      : ``
-  }`
+global.fileSearch = async (name, { onlyin = '~', kind = '', kMDItemContentType = '' } = {}) => {
+  let command = `/usr/bin/mdfind${name ? ` -name ${name}` : ''}${onlyin ? ` -onlyin ${onlyin}` : ''}${
+    kind ? ` "kind:${kind}"` : ''
+  }${kMDItemContentType ? ` "kMDItemContentType:${kMDItemContentType}"` : ''}`
 
   let results = []
 
@@ -24,7 +15,7 @@ global.fileSearch = async (
         windowsHide: true,
       })
     ).stdout
-      .split("\n")
+      .split('\n')
       .filter(Boolean)
   } catch (e) {
     warn(e)
@@ -48,7 +39,7 @@ global.getSelectedFile = async () => {
         
         set AppleScript's text item delimiters to linefeed
         finderSelList as text
-      end if`
+      end if`,
   )
 }
 
@@ -72,31 +63,23 @@ tell application "Finder" to select aFile
 `)
 }
 
-global.copyPathAsImage = async path =>
-  await applescript(
-    String.raw`set the clipboard to (read (POSIX file "${path}") as JPEG picture)`
-  )
+global.copyPathAsImage = async (path) =>
+  await applescript(String.raw`set the clipboard to (read (POSIX file "${path}") as JPEG picture)`)
 
 global.copyPathAsPicture = copyPathAsImage
 
-global.selectFolder = async (
-  message: string = "Pick a folder:"
-) => {
+global.selectFolder = async (message = 'Pick a folder:') => {
   return await sendWaitLong(Channel.SELECT_FOLDER, message)
 }
 
-global.selectFile = async (
-  message: string = "Pick a file:"
-) => {
+global.selectFile = async (message = 'Pick a file:') => {
   return await sendWaitLong(Channel.SELECT_FILE, message)
 }
 
-global.revealFile = async filePath => {
+global.revealFile = async (filePath) => {
   return sendWaitLong(Channel.REVEAL_FILE, filePath.trim())
 }
 
-global.revealInFinder = async filePath => {
+global.revealInFinder = async (filePath) => {
   return sendWaitLong(Channel.REVEAL_FILE, filePath.trim())
 }
-
-export {}

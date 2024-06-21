@@ -1,16 +1,16 @@
-let { Octokit } = await npm("@octokit/rest")
+let { Octokit } = await npm('@octokit/rest')
 
 let octokit = new Octokit({
   request: {
-    hook: require("@octokit/plugin-request-log").requestLog,
+    hook: require('@octokit/plugin-request-log').requestLog,
   },
-  auth: await env("GITHUB_TOKEN"),
+  auth: await env('GITHUB_TOKEN'),
 })
 
-let owner = "johnlindquist"
-let repo = "kit"
-let branch = "main"
-let version = await arg("Version")
+let owner = 'johnlindquist'
+let repo = 'kit'
+let branch = 'main'
+let version = await arg('Version')
 
 let commitRef = await octokit.git.getRef({
   owner,
@@ -25,7 +25,7 @@ let tagCreateResponse = await octokit.git.createTag({
   tag: version,
   message: version,
   object,
-  type: "commit",
+  type: 'commit',
 })
 
 let createRefResponse = await octokit.git.createRef({
@@ -35,4 +35,4 @@ let createRefResponse = await octokit.git.createRef({
   sha: tagCreateResponse.data.sha,
 })
 
-export {}
+export type {}

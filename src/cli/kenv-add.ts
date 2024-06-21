@@ -1,25 +1,22 @@
 // Description: Add Local Kenv Repo
 
-import { getLastSlashSeparated } from "../core/utils.js"
-import os from "os"
-import slugify from "slugify"
-import { ChannelHandler } from "../types/core.js"
+import os from 'node:os'
+import slugify from 'slugify'
+import { getLastSlashSeparated } from '../core/utils.js'
+import type { ChannelHandler } from '../types/core.js'
 
 let createKenvPathFromName = async (name: string) => {
-  let addKenvPath = ""
-  if (name === "") return ""
+  let addKenvPath = ''
+  if (name === '') {
+    return ''
+  }
 
   if (name.startsWith(path.sep)) {
     addKenvPath = name
+  } else if (name.startsWith('~')) {
+    addKenvPath = path.resolve(os.homedir(), name.slice(2))
   } else {
-    if (name.startsWith("~")) {
-      addKenvPath = path.resolve(
-        os.homedir(),
-        name.slice(2)
-      )
-    } else {
-      addKenvPath = path.resolve(os.homedir(), name)
-    }
+    addKenvPath = path.resolve(os.homedir(), name)
   }
 
   return addKenvPath
@@ -29,23 +26,23 @@ let onPathChange: ChannelHandler = async (
   _,
   {
     focused = {
-      name: "",
-      value: "",
+      name: '',
+      value: '',
     },
-  }
+  },
 ) => {
-  let resolvedPath = path.resolve(focused?.value, "scripts")
+  let resolvedPath = path.resolve(focused?.value, 'scripts')
   let exists = await isDir(resolvedPath)
 
-  if (!exists) {
-    setHint(`⚠️ No "scripts" dir in ${focused?.name}`)
-  } else {
+  if (exists) {
     setHint(`✅ found "scripts" dir in ${focused?.name}`)
+  } else {
+    setHint(`⚠️ No "scripts" dir in ${focused?.name}`)
   }
 }
 
 let existingKenvPath = await path({
-  hint: "Select a directory containing a scripts folder",
+  hint: 'Select a directory containing a scripts folder',
   onInput: onPathChange,
   onChoiceFocus: onPathChange,
   onlyDirs: true,
@@ -83,7 +80,7 @@ let existingKenvPath = await path({
 //   }
 // )
 
-if (!existingKenvPath || !(await isDir(existingKenvPath))) {
+if (!(existingKenvPath && (await isDir(existingKenvPath)))) {
   exit()
 }
 
@@ -95,11 +92,11 @@ let input = slugify(base, {
 
 let kenvName = await arg(
   {
-    placeholder: `Enter a kenv name`,
+    placeholder: 'Enter a kenv name',
     input,
     hint: `Enter a name for ${base}`,
-    validate: async input => {
-      let exists = await isDir(kenvPath("kenvs", input))
+    validate: async (input) => {
+      let exists = await isDir(kenvPath('kenvs', input))
       if (exists) {
         return `${input} already exists`
       }
@@ -107,11 +104,11 @@ let kenvName = await arg(
       return true
     },
   },
-  async input => {
-    let exists = await isDir(kenvPath("kenvs", input))
-    let out = ``
+  async (input) => {
+    let exists = await isDir(kenvPath('kenvs', input))
+    let out = ''
     if (!input) {
-      out = `A kenv name is required`
+      out = 'A kenv name is required'
     } else if (exists) {
       out = `A kenv named "${input}" already exists`
     } else {
@@ -119,22 +116,17 @@ let kenvName = await arg(
           <p>Submit to symlink</p>
           <p class="font-mono">${existingKenvPath}</p>
           <p>to</p>
-          <p class="font-mono">${kenvPath(
-            "kenvs",
-            input
-          )}</p>`
+          <p class="font-mono">${kenvPath('kenvs', input)}</p>`
     }
 
     return md(out.trim())
-  }
+  },
 )
 
-let kenvDir = kenvPath("kenvs", kenvName)
+let kenvDir = kenvPath('kenvs', kenvName)
 
-ln("-s", existingKenvPath, kenvDir)
+ln('-s', existingKenvPath, kenvDir)
 
-await cli("create-all-bins-no-trash")
+await cli('create-all-bins-no-trash')
 
 await mainScript()
-
-export {}

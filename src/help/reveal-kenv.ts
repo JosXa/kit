@@ -1,3 +1,3 @@
-await cli("reveal", kenvPath("scripts"))
+await cli('reveal', kenvPath('scripts'))
 
-export {}
+export type {}

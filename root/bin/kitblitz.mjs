@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
-import { Bin } from "../core/enum.js"
-import { getScripts } from "../core/db.js"
+import path from "node:path"
 import { createBinFromScript } from "../cli/lib/utils.js"
-import path from "path"
+import { getScripts } from "../core/db.js"
+import { Bin } from "../core/enum.js"
 
 let filePath = path.dirname(
   new URL(import.meta.url).pathname
@@ -25,7 +25,7 @@ await import("../api/global.js")
 await import("../api/kit.js")
 await import("../api/lib.js")
 
-await import(`../platform/stackblitz.js`)
+await import("../platform/stackblitz.js")
 
 configEnv()
 
@@ -71,11 +71,7 @@ let config = {
   startCommand: "./node_modules/.bin/kitblitz --start",
 }
 
-if (!stackblitzRcExists) {
-  await outputJson(stackblitzRcPath, config, {
-    spaces: "\t",
-  })
-} else {
+if (stackblitzRcExists) {
   let rc = await readJson(stackblitzRcPath)
   if (!rc?.env?.PATH.includes(`${projectRoot}/bin`)) {
     let existingPath = rc?.env?.PATH || ""
@@ -96,6 +92,10 @@ if (!stackblitzRcExists) {
       await createBinFromScript(Bin.scripts, script)
     }
   }
+} else {
+  await outputJson(stackblitzRcPath, config, {
+    spaces: "\t",
+  })
 }
 
 await runCli()
