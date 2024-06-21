@@ -1,0 +1,83 @@
+{
+  "$schema": "https://biomejs.dev/schemas/1.8.2/schema.json",
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true,
+    "defaultBranch": "main"
+  },
+  "organizeImports": {
+    "enabled": true
+  },
+  "linter": {
+    "enabled": true,
+    "ignore": ["~/.kit", "test-sdk", "src/editor/types"],
+    "rules": {
+      "all": true,
+      "complexity": {
+        "noExcessiveCognitiveComplexity": "off",
+        "noForEach": "off",
+        "noStaticOnlyClass": "off",
+        "noBannedTypes": "off"
+      },
+      "performance": {
+        "noReExportAll": "off",
+        "noDelete": "off"
+      },
+      "correctness": {
+        "noUndeclaredVariables": "off",
+        "noConstantCondition": "off",
+        "noUnusedVariables": "off",
+        "noUnusedImports": "off",
+        "noNodejsModules": "off"
+      },
+      "style": {
+        "noDefaultExport": "off",
+        "noParameterAssign": "off",
+        "useNamingConvention": "off",
+        "noParameterProperties": "off",
+        "noNonNullAssertion": "off",
+        "useTemplate": "off",
+        "useForOf": "off",
+        "useConst": "off",
+        "noVar": "off",
+        "noNamespaceImport": "off",
+        "useConsistentArrayType": "off",
+        "noNamespace": "off",
+        "useShorthandFunctionType": "off"
+      },
+      "suspicious": {
+        "noEmptyBlockStatements": "off",
+        "noDebugger": "off",
+        "noConsoleLog": "off",
+        "noExplicitAny": "off",
+        "noAssignInExpressions": "off",
+        "noImplicitAnyLet": "off",
+        "noRedeclare": "off"
+      }
+    }
+  },
+  "formatter": {
+    "enabled": true,
+    "include": ["**/*.ts", "**/*.js", "**/*.jsx", "**/*.tsx", "**/*.css", "**/*.json"],
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineWidth": 120,
+    "ignore": [".cache", ".history", ".npm-cache", "node_modules", ".vscode", "~/.kit", "test-sdk"]
+  },
+  "javascript": {
+    "formatter": {
+      "enabled": true,
+      "quoteStyle": "single",
+      "trailingCommas": "all",
+      "semicolons": "asNeeded",
+      "bracketSpacing": true,
+      "arrowParentheses": "always"
+    }
+  },
+  "json": {
+    "formatter": {
+      "enabled": true
+    }
+  }
+}

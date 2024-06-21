@@ -38,6 +38,8 @@
     "download-md": "node ./build/download-md.js",
     "dev": "tsc --watch --outDir ~/.kit",
     "declaration": "tsc -p ./tsconfig-declaration.json --watch",
+    "format:check": "biome check .",
+    "format:fix": "biome check . --write --unsafe",
     "pretest:core": "node ./scripts/test-pre.js",
     "test:core": "NODE_NO_WARNINGS=1 ava ./src/core/*.test.js --no-worker-threads",
     "pretest:kit": "node ./scripts/test-pre.js",
@@ -95,6 +97,7 @@
     "zx": "^8.1.2"
   },
   "devDependencies": {
+    "@biomejs/biome": "^1.8.2",
     "@types/debug": "4.1.12",
     "@types/express": "4.17.21",
     "@types/express-ws": "3.0.4",

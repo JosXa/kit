@@ -121,10 +121,13 @@ ROADMAP.md
 .DS_Store
 .lsp
 kit.code-workspace
-.vscode
 fifo
 kit.sock
 .kitignore
 TODO.md
 .idea
 .tsimp
+
+.vscode
+!.vscode/extensions.json
+!.vscode/settings.json
